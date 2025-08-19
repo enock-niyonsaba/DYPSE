@@ -1,0 +1,264 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  youth
+  employer
+  admin
+  verifier
+}
+
+enum JobStatus {
+  unemployed
+  employed
+  self_employed
+}
+
+enum SkillLevel {
+  beginner
+  intermediate
+  expert
+}
+
+enum ApplicationStatus {
+  applied
+  shortlisted
+  rejected
+}
+
+model User {
+  id                      String    @id @default(uuid())
+  email                   String    @unique
+  passwordHash            String
+  role                    UserRole
+  phone                   String?
+  isEmailVerified         Boolean   @default(false)
+  emailVerificationToken  String?
+  emailVerificationExpiry DateTime?
+  resetToken              String?
+  resetTokenExpiry        DateTime?
+  createdAt               DateTime  @default(now())
+  lastLogin               DateTime?
+  isActive                Boolean   @default(true)
+
+  profile             YouthProfile?
+  employerProfile     EmployerProfile?
+  jobs                Job[]
+  auditLogs           AuditLog[]
+  passwordResetTokens PasswordResetToken[]
+
+  @@index([emailVerificationToken])
+  @@index([resetToken])
+}
+
+model YouthProfile {
+  id             String                 @id @default(uuid())
+  userId         String                 @unique
+  user           User                   @relation(fields: [userId], references: [id])
+  firstName      String
+  lastName       String
+  dateOfBirth    DateTime?
+  gender         String?
+  address        String?
+  city           String?
+  state          String?
+  country        String?
+  postalCode     String?
+  bio            String?                @db.Text
+  jobStatus      JobStatus              @default(unemployed)
+  skills         ProfileSkill[]         @relation("YouthSkills")
+  applications   Application[]
+  educations     Education[]
+  experiences    Experience[]
+  businesses     Business[]
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
+  verification   Verification?          @relation(fields: [verificationId], references: [id])
+  verificationId String?                @unique
+  reminders      VerificationReminder[]
+}
+
+model EmployerProfile {
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id])
+  companyName  String
+  contactName  String
+  contactTitle String?
+  companySize  String?
+  industry     String?
+  website      String?
+  description  String?  @db.Text // Changed from 'about' to 'description' to match code
+  logo      String? // Changed from 'logo' to 'logoUrl' to match code
+  address      String?
+  city         String?
+  state        String?
+  country      String?
+  postalCode   String?
+  phone        String? // Added missing phone field
+  isVerified   Boolean  @default(false)
+  jobs         Job[]    @relation("EmployerJobs")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Education {
+  id           String       @id @default(uuid())
+  profileId    String
+  profile      YouthProfile @relation(fields: [profileId], references: [id])
+  school       String
+  degree       String?
+  fieldOfStudy String?
+  startDate    DateTime?
+  endDate      DateTime?
+  verified     Boolean      @default(false)
+}
+
+model Experience {
+  id           String       @id @default(uuid())
+  profileId    String
+  profile      YouthProfile @relation(fields: [profileId], references: [id])
+  employerName String
+  role         String
+  startDate    DateTime?
+  endDate      DateTime?
+  description  String?
+  isCurrent    Boolean      @default(false)
+}
+
+model Skill {
+  id            String         @id @default(uuid())
+  name          String         @unique
+  canonicalName String?
+  category      String?
+  profileSkills ProfileSkill[]
+  // Added inverse relation for SkillDemand
+  skillDemands  SkillDemand[]
+}
+
+model ProfileSkill {
+  id              String       @id @default(uuid())
+  profileId       String
+  profile         YouthProfile @relation("YouthSkills", fields: [profileId], references: [id])
+  skillId         String
+  skill           Skill        @relation(fields: [skillId], references: [id])
+  level           SkillLevel
+  yearsExperience Int?         @default(0)
+
+  @@unique([profileId, skillId])
+  @@index([skillId])
+}
+
+model Business {
+  id                 String       @id @default(uuid())
+  profileId          String
+  profile            YouthProfile @relation(fields: [profileId], references: [id])
+  businessName       String
+  businessType       String?
+  revenueEstimate    Float?
+  registrationStatus String?
+  needsSupport       String?
+  createdAt          DateTime     @default(now())
+}
+
+model Verification {
+  id           String                 @id @default(uuid())
+  status       String // e.g., 'pending', 'verified', 'rejected'
+  documentType String? // e.g., 'id_card', 'passport', 'certificate'
+  documentUrl  String? // URL to the uploaded document
+  verifiedAt   DateTime?
+  verifiedBy   String? // Admin ID who verified
+  notes        String? // Any notes from the verifier
+  youthProfile YouthProfile[]
+  reminders    VerificationReminder[]
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+}
+
+model VerificationReminder {
+  id             String       @id @default(uuid())
+  profileId      String
+  profile        YouthProfile @relation(fields: [profileId], references: [id])
+  verification   Verification @relation(fields: [verificationId], references: [id])
+  verificationId String
+  reminderSentAt DateTime?    @default(now())
+  message        String?
+
+  @@unique([profileId, verificationId])
+}
+
+model Job {
+  id                String          @id @default(uuid())
+  employerId        String
+  employer          User            @relation(fields: [employerId], references: [id])
+  employerProfile   EmployerProfile @relation("EmployerJobs", fields: [employerProfileId], references: [id])
+  employerProfileId String
+  title             String
+  description       String?
+  requiredSkills    Json?
+  location          String?
+  isRemote          Boolean         @default(false)
+  salaryRange       String?
+  postedAt          DateTime        @default(now())
+  expiresAt         DateTime?
+  status            String?
+  applications      Application[]
+
+  @@index([postedAt])
+}
+
+model Application {
+  id        String            @id @default(uuid())
+  jobId     String
+  job       Job               @relation(fields: [jobId], references: [id])
+  profileId String
+  profile   YouthProfile      @relation(fields: [profileId], references: [id])
+  status    ApplicationStatus
+  score     Float?
+  appliedAt DateTime          @default(now())
+
+  @@unique([jobId, profileId])
+}
+
+model SkillDemand {
+  id          String   @id @default(uuid())
+  skillId     String
+  skill       Skill    @relation(fields: [skillId], references: [id])
+  periodStart DateTime
+  periodEnd   DateTime
+  demandCount Int
+
+  @@index([skillId, periodStart, periodEnd])
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  actorId    String?
+  actor      User?    @relation(fields: [actorId], references: [id])
+  action     String
+  entityType String
+  entityId   String?
+  metaJson   Json?
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+model PasswordResetToken {
+  id        String    @id @default(uuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+}
