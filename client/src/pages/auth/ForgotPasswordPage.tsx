@@ -59,7 +59,7 @@ export function ForgotPasswordPage() {
            <div className="w-full max-w-md">
              <Card className="w-full bg-white/90 backdrop-blur-sm shadow-xl overflow-hidden">
                <div className="px-8 py-2 bg-gradient-to-r from-blue-600 to-purple-600">
-                 <h1 className="text-2xl font-bold text-white text-center py-2">DYPSM</h1>
+                 <h1 className="text-2xl font-bold text-white text-center py-2">DYPSE</h1>
                </div>
                
             
@@ -117,7 +117,7 @@ export function ForgotPasswordPage() {
                     <Button
                       type="submit"
                       disabled={isLoading}
-                      className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors ${isLoading ? 'bg-blue-400' : 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500'}`}
+                      className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors ${isLoading ? 'bg-blue-400' : 'bg-gradient-to-r from-[#0033FF] to-[#000333DD] hover:bg-blue-700 focus:ring-blue-500'}`}
                     >
                       {isLoading ? (
                         <>

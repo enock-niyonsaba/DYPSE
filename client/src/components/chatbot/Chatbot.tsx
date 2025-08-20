@@ -118,10 +118,10 @@ export function Chatbot() {
           className="bg-white rounded-t-2xl rounded-bl-2xl shadow-xl w-80 h-[500px] flex flex-col overflow-hidden border border-gray-300"
         >
           {/* Header */}
-          <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-4 text-white flex justify-between items-center">
+          <div className="bg-gradient-to-r from-[#0033FF] to-[#000333DD] p-4 text-white flex justify-between items-center">
             <div className="flex items-center space-x-2">
               <FaRobot className="h-5 w-5" />
-              <h3 className="font-semibold">DYPSM Assistant</h3>
+              <h3 className="font-semibold">DYPES Assistant</h3>
             </div>
             <button 
               onClick={() => setIsOpen(false)}
@@ -187,7 +187,7 @@ export function Chatbot() {
       ) : (
         <button
           onClick={() => setIsOpen(true)}
-          className="bg-purple-600 hover:bg-purple-700 text-white px-5 py-3 rounded-full shadow-lg transition-all hover:shadow-xl transform hover:-translate-y-1 focus:outline-none flex items-center space-x-2"
+          className="bg-gradient-to-r from-[#0033FF] to-[#000333DD] text-white px-5 py-3 rounded-full shadow-lg transition-all hover:shadow-xl transform hover:-translate-y-1 focus:outline-none flex items-center space-x-2"
           aria-label="Open chat"
         >
           <FiMessageSquare className="h-5 w-5" />

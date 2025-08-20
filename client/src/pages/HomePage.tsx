@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { FaArrowRight, FaChartLine, FaUsers, FaLightbulb, FaHandshake, FaUser } from 'react-icons/fa';
 import { NavBar } from '@/components/layout/NavBar';
 import { Footer } from '@/components/layout/Footer';
+import {Chatbot} from '@/components/chatbot/Chatbot'
 
 export function HomePage() {
   // State for the animated line positions
@@ -43,7 +44,7 @@ export function HomePage() {
       <NavBar />
       
       {/* Hero Section */}
-      <section className="relative py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-600 to-purple-600 text-white overflow-hidden">
+      <section className="relative py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-[#0033FF] to-[#000333DD] text-white overflow-hidden">
         <div className="max-w-7xl mx-auto">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
@@ -112,7 +113,7 @@ export function HomePage() {
                   <h3 className="text-3xl font-extrabold bg-gradient-to-r from-amber-700 to-amber-900 bg-clip-text text-transparent">
                     10,000+
                   </h3>
-                  <p className="text-base font-medium text-amber-900/80">Youth Empowered</p>
+                  <p className="text-base font-medium text-amber-900/80">Youth Employed</p>
                 </div>
               </div>
             </div>
@@ -213,13 +214,13 @@ export function HomePage() {
           </p>
           <Link 
             to="/signup" 
-            className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 md:py-4 md:text-lg md:px-10 transition-colors duration-200"
+            className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gradient-to-r from-[#0033FF] to-[#000333DD] hover:bg-blue-700 md:py-4 md:text-lg md:px-10 transition-colors duration-200"
           >
             Sign Up Now <FaArrowRight className="ml-2" />
           </Link>
         </div>
       </section>
-      
+      <Chatbot/>
       <Footer />
     </div>
   );

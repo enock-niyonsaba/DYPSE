@@ -16,7 +16,7 @@ export function NavBar() {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <header className="bg-white shadow-sm sticky top-0 z-50">
+    <header className="bg-[#D9D9D9] shadow-sm sticky top-0 z-50">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" aria-label="Top">
         <div className="flex justify-between items-center py-4">
           {/* Logo */}
@@ -43,7 +43,7 @@ export function NavBar() {
 
           {/* CTA Button */}
           <div className="hidden md:block">
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white" asChild>
+            <Button className="bg-gradient-to-r from-[#0033FF] to-[#000333DD] hover:bg-blue-700 text-white" asChild>
               <Link to="/login">Get Started</Link>
             </Button>
           </div>

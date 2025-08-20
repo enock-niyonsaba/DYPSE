@@ -20,7 +20,7 @@ const OpportunityCard = ({ title, description, icon, buttonText, to }: Opportuni
         <p className="text-gray-600 mb-6">{description}</p>
         <Link
           to={to}
-          className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 w-full"
+          className="inline-flex items-center justify-center px-4 py-2 border  text-sm font-medium rounded-md shadow-sm text-black bg-gradient-to-r from-[#0033FF] to-[#000333DD] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 w-full"
         >
           {buttonText}
         </Link>

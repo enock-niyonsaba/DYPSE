@@ -16,7 +16,7 @@ export function AuthLayout({ children, title, description }: AuthLayoutProps) {
         <div className="w-full max-w-md">
           <div className="bg-white/90 backdrop-blur-sm shadow-xl rounded-lg overflow-hidden">
             <div className="px-8 py-2 bg-gradient-to-r from-blue-600 to-purple-600">
-              <h1 className="text-2xl font-bold text-white text-center py-2">DYPSM</h1>
+              <h1 className="text-2xl font-bold text-white text-center py-2">DYPSE</h1>
             </div>
             
             <div className="p-6 space-y-4">

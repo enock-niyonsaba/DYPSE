@@ -249,7 +249,7 @@ const YouthNavbar: React.FC<YouthNavbarProps> = ({ onToggleSidebar }) => {
                 <div>
                   <button
                     type="button"
-                    className="max-w-xs bg-white flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 hover:bg-blue-50 px-2 py-1 transition-colors duration-150"
+                    className="max-w-xs flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 hover:bg-blue-50 px-2 py-1 transition-colors duration-150"
                     id="user-menu-button"
                     aria-expanded={isProfileOpen}
                     aria-haspopup="true"

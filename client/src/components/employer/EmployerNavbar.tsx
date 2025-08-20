@@ -166,7 +166,7 @@ const EmployerNavbar: React.FC<EmployerNavbarProps> = ({ onToggleSidebar }) => {
               <FiSearch className="h-6 w-6" aria-hidden="true" />
             </button>
 
-{/* Notifications */}
+                    {/* Notifications */}
             <div className="ml-4 relative" ref={notificationsRef}>
               <button
                 type="button"
@@ -223,7 +223,7 @@ const EmployerNavbar: React.FC<EmployerNavbarProps> = ({ onToggleSidebar }) => {
             <div className="ml-4 relative" ref={profileRef}>
               <button
                 type="button"
-                className="max-w-xs bg-white flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="max-w-xs  flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 id="user-menu"
                 aria-expanded="false"
                 aria-haspopup="true"
