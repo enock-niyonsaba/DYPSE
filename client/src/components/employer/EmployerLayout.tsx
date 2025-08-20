@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import EmployerSidebar from '@/components/employer/EmployerSidebar';
 import EmployerNavbar from '@/components/employer/EmployerNavbar';
 import EmployerFooter from '@/components/employer/EmployerFooter';
+import {Chatbot} from '@/components/chatbot/Chatbot';
 
 const EmployerLayout: React.FC = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -87,7 +88,7 @@ const EmployerLayout: React.FC = () => {
             <Outlet />
           </div>
         </main>
-        
+        <Chatbot/>
         {/* Footer */}
         <div className="bg-white border-t border-gray-200 w-full">
           <EmployerFooter />

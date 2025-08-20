@@ -1,6 +1,8 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { AuthProvider, ProtectedRoute } from './contexts/AuthContext';
 import { HomePage } from './pages/HomePage';
+import { AboutUsPage } from './pages/AboutUsPage';
+import { ContactUsPage } from './pages/ContactUsPage';
 import { LoginPage } from './pages/auth/LoginPage';
 import { SignupPage } from './pages/auth/SignupPage';
 import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage';
@@ -21,6 +23,7 @@ import EmployerProfiles from './pages/employer/EmployerProfiles';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import YouthLayout from './components/youth/YouthLayout';
 import EmployerLayout from './components/employer/EmployerLayout';
+import AnalyticsPage from './pages/employer/AnalyticsPage';
 
 function App() {
   return (
@@ -29,6 +32,8 @@ function App() {
         <Routes>
           {/* Public routes */}
           <Route path="/" element={<HomePage />} />
+          <Route path="/about-us" element={<AboutUsPage />} />
+          <Route path="/contact" element={<ContactUsPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
@@ -69,6 +74,7 @@ function App() {
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<EmployerDashboardPage />} />
             <Route path="profile" element={<EmployerProfiles />} />
+            <Route path="analytics" element={<AnalyticsPage />} />
           </Route>
           
           <Route 

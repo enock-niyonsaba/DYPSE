@@ -10,7 +10,7 @@ import {
   UserGroupIcon,
   BriefcaseIcon,
   ClipboardDocumentIcon as ClipboardIcon,
-  BellIcon 
+  BellIcon,
 } from '@heroicons/react/24/outline';
 
 interface NavItem {
