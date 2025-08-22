@@ -8,7 +8,7 @@ const YouthFooter: React.FC = () => {
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="text-sm text-gray-500">
-            © {currentYear} DYPSM Dynamic Youth Profiling .  All rights reserved.
+            © {currentYear} DYPSE Dynamic Youth Profiling .  All rights reserved.
           </div>
           <div className="mt-2 md:mt-0">
             <nav className="flex items-center space-x-4">

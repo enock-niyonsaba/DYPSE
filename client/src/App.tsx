@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { AuthProvider, ProtectedRoute } from './contexts/AuthContext';
+import { NotificationProvider } from './contexts/NotificationContext';
 import { HomePage } from './pages/HomePage';
 import { AboutUsPage } from './pages/AboutUsPage';
 import { ContactUsPage } from './pages/ContactUsPage';
@@ -20,16 +21,27 @@ import OpportunitiesPage from './pages/youth/OpportunitiesPage';
 import GroupsPage from './pages/youth/GroupsPage';
 import EmployerDashboardPage from './pages/employer/DashboardPage';
 import EmployerProfiles from './pages/employer/EmployerProfiles';
-import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminDashboard from './pages/admin/DashboardPage';
+import YouthProfilesPage from './pages/admin/YouthProfilesPage';
+import SearchAndMatchPage from './pages/admin/SearchAndMatchPage';
+import LocationMapPage from './pages/admin/LocationMapPage';
+import EmployerLocationMapPage from './pages/employer/LocationMapPage';
+import EmployersPage from './pages/admin/EmployersPage';
 import YouthLayout from './components/youth/YouthLayout';
 import EmployerLayout from './components/employer/EmployerLayout';
+import AdminLayout from './components/admin/AdminLayout';
 import AnalyticsPage from './pages/employer/AnalyticsPage';
+import AdminAnalyticsPage from './pages/admin/AnalyticsPage';
+import AdminNotificationsPage from './pages/admin/NotificationsPage';
+import TrainingCentersPage from './pages/admin/TrainingCentersPage';
+import EmployerNotificationsPage from './pages/employer/NotificationsPage';
 
 function App() {
   return (
     <Router>
       <AuthProvider>
-        <Routes>
+        <NotificationProvider>
+          <Routes>
           {/* Public routes */}
           <Route path="/" element={<HomePage />} />
           <Route path="/about-us" element={<AboutUsPage />} />
@@ -62,6 +74,27 @@ function App() {
             {/* Add other youth routes here */}
           </Route>
           
+          {/* Admin Routes */}
+          <Route 
+            path="/admin" 
+            element={
+              <ProtectedRoute roles={['admin']}>
+                <AdminLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route path="search-match" element={<SearchAndMatchPage />} />
+            <Route path="notifications" element={<AdminNotificationsPage />} />
+            <Route path="training-centers" element={<TrainingCentersPage />} />
+            <Route index element={<Navigate to="dashboard" replace />} />
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="youth-profiles" element={<YouthProfilesPage/>} />
+            <Route path="employers" element={<EmployersPage/>} />
+            <Route path="analytics" element={<AdminAnalyticsPage/>}/>
+            <Route path="location-map" element={<LocationMapPage/>}/>
+            {/* Add other admin routes here */}
+          </Route>
+          
           {/* Employer Routes */}
           <Route 
             path="/employer" 
@@ -75,17 +108,11 @@ function App() {
             <Route path="dashboard" element={<EmployerDashboardPage />} />
             <Route path="profile" element={<EmployerProfiles />} />
             <Route path="analytics" element={<AnalyticsPage />} />
-          </Route>
+            <Route path="location-map" element={<EmployerLocationMapPage/>}/>
+            <Route path="notifications" element={<EmployerNotificationsPage/>}/>
+          </Route>       
           
-          <Route 
-            path="/admin" 
-            element={
-              <ProtectedRoute roles={['admin']}>
-                <AdminDashboard />
-              </ProtectedRoute>
-            } 
-          />
-          
+
           {/* Redirect root to appropriate dashboard based on role */}
           <Route 
             path="/dashboard" 
@@ -118,7 +145,8 @@ function App() {
               </div>
             }
           />
-        </Routes>
+          </Routes>
+        </NotificationProvider>
       </AuthProvider>
     </Router>
   );

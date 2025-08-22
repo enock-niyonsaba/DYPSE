@@ -78,7 +78,7 @@ const YouthSidebar: React.FC<YouthSidebarProps> = ({ isCollapsed, onToggleSideba
     >
       <div className="p-4 flex justify-between items-center">
         <h1 className={`text-xl font-bold text-white ${isCollapsed ? 'hidden' : 'block'}`}>
-          DYPSM
+          DYPSE
         </h1>
         <button 
           onClick={onToggleSidebar}

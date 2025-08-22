@@ -1,14 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useNotifications } from '@/contexts/NotificationContext';
+import { formatDistanceToNow } from 'date-fns';
+import { NotificationBadge } from '@/components/common/NotificationBadge';
 import { 
   BellIcon, 
   MagnifyingGlassIcon as SearchIcon, 
   ChevronDownIcon,
-  CheckIcon,
-  ClockIcon,
-  ExclamationCircleIcon
+  UsersIcon,
+  UserGroupIcon
 } from '@heroicons/react/24/outline';
+
 
 interface YouthNavbarProps {
   onToggleSidebar: () => void;
@@ -17,47 +20,34 @@ interface YouthNavbarProps {
 const YouthNavbar: React.FC<YouthNavbarProps> = ({ onToggleSidebar }) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const profileRef = useRef<HTMLDivElement>(null);
-  
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
-
-  // Notification state
-  const [notifications, setNotifications] = useState([
-    {
-      id: 1,
-      title: 'New Job Match',
-      message: 'You have been matched with a new job at Tech Corp.',
-      time: '10 min ago',
-      read: false,
-      type: 'success'
-    },
-    {
-      id: 2,
-      title: 'Training Reminder',
-      message: 'Your web development training starts in 2 days.',
-      time: '2 hours ago',
-      read: true,
-      type: 'info'
-    },
-    {
-      id: 3,
-      title: 'Application Update',
-      message: 'Your application at Design Studio has been reviewed.',
-      time: '1 day ago',
-      read: true,
-      type: 'warning'
-    }
-  ]);
-  
   const [showNotifications, setShowNotifications] = useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
   const notificationRef = useRef<HTMLDivElement>(null);
   
-  // Close notifications when clicking outside
+  const { user, logout } = useAuth();
+  const { notifications, markAsRead } = useNotifications();
+  const navigate = useNavigate();
+
+  const youthNotifications = notifications.filter(
+    notification => notification.target === 'all' || notification.target === 'youths'
+  );
+  
+  const unreadCount = youthNotifications.filter(n => !n.read).length;
+  
+  const handleMarkAllAsRead = () => {
+    const unreadIds = youthNotifications
+      .filter(n => !n.read)
+      .map(n => n.id);
+    unreadIds.forEach(id => markAsRead(id));
+  };
+  
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
         setShowNotifications(false);
+      }
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+        setIsProfileOpen(false);
       }
     }
     
@@ -67,22 +57,6 @@ const YouthNavbar: React.FC<YouthNavbarProps> = ({ onToggleSidebar }) => {
     };
   }, []);
   
-  const unreadCount = notifications.filter(n => !n.read).length;
-  
-  const markAsRead = (id: number) => {
-    setNotifications(notifications.map(notification => 
-      notification.id === id ? { ...notification, read: true } : notification
-    ));
-  };
-  
-  const markAllAsRead = () => {
-    setNotifications(notifications.map(notification => ({
-      ...notification,
-      read: true
-    })));
-  };
-  
-  // Get user initials from name
   const getInitials = (name: string) => {
     return name
       .split(' ')
@@ -161,11 +135,7 @@ const YouthNavbar: React.FC<YouthNavbarProps> = ({ onToggleSidebar }) => {
               >
                 <span className="sr-only">View notifications</span>
                 <BellIcon className="h-6 w-6" aria-hidden="true" />
-                {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                    {unreadCount}
-                  </span>
-                )}
+                <NotificationBadge count={unreadCount} className="absolute -top-1 -right-1" />
               </button>
               
               {/* Notification Dropdown */}
@@ -176,7 +146,7 @@ const YouthNavbar: React.FC<YouthNavbarProps> = ({ onToggleSidebar }) => {
                       <h3 className="text-sm font-medium text-gray-700">Notifications</h3>
                       {unreadCount > 0 && (
                         <button
-                          onClick={markAllAsRead}
+                          onClick={handleMarkAllAsRead}
                           className="text-xs text-blue-600 hover:text-blue-800"
                         >
                           Mark all as read
@@ -185,57 +155,52 @@ const YouthNavbar: React.FC<YouthNavbarProps> = ({ onToggleSidebar }) => {
                     </div>
                   </div>
                   <div className="max-h-96 overflow-y-auto">
-                    {notifications.length > 0 ? (
-                      <div className="divide-y divide-gray-100">
-                        {notifications.map((notification) => (
-                          <div 
+                    {youthNotifications.length > 0 ? (
+                      youthNotifications.map((notification) => {
+                        const Icon = notification.target === 'all' ? UsersIcon : UserGroupIcon;
+                        const iconColor = notification.target === 'all' ? 'text-blue-500' : 'text-green-500';
+                        
+                        return (
+                          <Link
                             key={notification.id}
-                            className={`px-4 py-3 hover:bg-gray-50 cursor-pointer ${!notification.read ? 'bg-blue-50' : ''}`}
+                            to="/youth/notifications"
+                            className={`block px-4 py-3 hover:bg-gray-50 ${
+                              !notification.read ? 'bg-blue-50' : ''
+                            }`}
                             onClick={() => markAsRead(notification.id)}
                           >
                             <div className="flex items-start">
-                              <div className={`flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center ${
-                                notification.type === 'success' ? 'bg-green-100 text-green-600' :
-                                notification.type === 'warning' ? 'bg-yellow-100 text-yellow-600' :
-                                'bg-blue-100 text-blue-600'
-                              }`}>
-                                {notification.type === 'success' ? (
-                                  <CheckIcon className="h-4 w-4" />
-                                ) : notification.type === 'warning' ? (
-                                  <ExclamationCircleIcon className="h-4 w-4" />
-                                ) : (
-                                  <ClockIcon className="h-4 w-4" />
-                                )}
+                              <div className={`flex-shrink-0 mt-0.5 ${iconColor}`}>
+                                <Icon className="h-4 w-4" />
                               </div>
                               <div className="ml-3 flex-1">
-                                <p className="text-sm font-medium text-gray-900">
-                                  {notification.title}
-                                </p>
-                                <p className="text-sm text-gray-500">
-                                  {notification.message}
-                                </p>
-                                <div className="mt-1 text-xs text-gray-400 flex items-center">
-                                  <ClockIcon className="h-3 w-3 mr-1" />
-                                  {notification.time}
-                                  {!notification.read && (
-                                    <span className="ml-2 inline-block h-2 w-2 rounded-full bg-blue-500"></span>
-                                  )}
+                                <div className="flex justify-between items-start">
+                                  <p className="text-sm font-medium text-gray-900">
+                                    {notification.title}
+                                  </p>
+                                  <span className="text-xs text-gray-400">
+                                    {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
+                                  </span>
                                 </div>
+                                <p className="text-sm text-gray-600 mt-1">{notification.message}</p>
+                                {!notification.read && (
+                                  <span className="inline-block h-2 w-2 rounded-full bg-blue-500 mt-1"></span>
+                                )}
                               </div>
                             </div>
-                          </div>
-                        ))}
-                      </div>
+                          </Link>
+                        );
+                      })
                     ) : (
-                      <div className="p-4 text-center">
-                        <p className="text-sm text-gray-500">No new notifications</p>
+                      <div className="px-4 py-3 text-center text-sm text-gray-500">
+                        No new notifications
                       </div>
                     )}
                   </div>
-                  <div className="p-2 border-t border-gray-200 bg-gray-50 text-center rounded-b-md">
+                  <div className="border-t border-gray-100 bg-gray-50 text-center rounded-b-md">
                     <Link
                       to="/youth/notifications"
-                      className="text-xs font-medium text-blue-600 hover:text-blue-800"
+                      className="block py-2 text-sm font-medium text-blue-600 hover:bg-gray-100"
                       onClick={() => setShowNotifications(false)}
                     >
                       View all notifications

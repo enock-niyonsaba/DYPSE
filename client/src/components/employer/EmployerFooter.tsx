@@ -15,13 +15,13 @@ const EmployerFooter: React.FC = () => {
             <Link to="/terms" className="text-gray-500 hover:text-gray-700 text-sm">
               Terms of Service
             </Link>
-            <Link to="/help" className="text-gray-500 hover:text-gray-700 text-sm">
+            <Link to="/contact-us" className="text-gray-500 hover:text-gray-700 text-sm">
               Help Center
             </Link>
           </div>
           <div className="mt-4 md:mt-0">
             <p className="text-center text-sm text-gray-500">
-              &copy; {currentYear} DYPSM. All rights reserved.
+              &copy; {currentYear} DYPSE. All rights reserved.
             </p>
           </div>
         </div>

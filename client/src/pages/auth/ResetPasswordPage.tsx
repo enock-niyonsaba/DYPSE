@@ -164,7 +164,7 @@ export function ResetPasswordPage() {
         <div className="w-full max-w-md">
           <Card className="w-full bg-white/90 backdrop-blur-sm shadow-xl overflow-hidden">
             <div className="px-8 py-2 bg-gradient-to-r from-blue-600 to-purple-600">
-              <h1 className="text-2xl font-bold text-white text-center py-2">DYPSM</h1>
+              <h1 className="text-2xl font-bold text-white text-center py-2">DYPSE</h1>
             </div>
             
             <CardHeader className="space-y-1 text-center pb-2">

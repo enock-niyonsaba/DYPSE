@@ -517,7 +517,7 @@ const EmployerProfiles = () => {
                     name="companyName"
                     value={formData.companyName}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                     required
                   />
                 </div>
@@ -530,7 +530,7 @@ const EmployerProfiles = () => {
                     name="industry"
                     value={formData.industry}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                     required
                   >
                     <option value="">Select Industry</option>
@@ -553,7 +553,7 @@ const EmployerProfiles = () => {
                     name="companySize"
                     value={formData.companySize}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                     required
                   >
                     <option value="">Select Size</option>
@@ -574,7 +574,7 @@ const EmployerProfiles = () => {
                     name="foundedYear"
                     value={formData.foundedYear}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
@@ -588,7 +588,7 @@ const EmployerProfiles = () => {
                       name="city"
                       value={formData.city}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                     />
                   </div>
                   <div>
@@ -601,7 +601,7 @@ const EmployerProfiles = () => {
                       name="country"
                       value={formData.country}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                     />
                   </div>
                 </div>
@@ -617,7 +617,7 @@ const EmployerProfiles = () => {
                   name="website"
                   value={formData.website}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   placeholder="https://example.com"
                 />
               </div>
@@ -633,7 +633,7 @@ const EmployerProfiles = () => {
                     rows={4}
                     value={formData.description}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                     required
                   />
                 </div>
@@ -652,7 +652,7 @@ const EmployerProfiles = () => {
                             e.stopPropagation();
                             removeLogo();
                           }}
-                          className="absolute top-1 right-1 bg-black bg-opacity-50 text-white rounded-full p-1 hover:bg-opacity-70"
+                          className="absolute top-1 right-1 bg-black bg-opacity-100 text-white rounded-full p-1 hover:bg-opacity-70"
                         >
                           <FiX className="h-4 w-4" />
                         </button>
@@ -693,7 +693,7 @@ const EmployerProfiles = () => {
                     name="taxId"
                     value={formData.taxId}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
                 <div>
@@ -706,7 +706,7 @@ const EmployerProfiles = () => {
                     name="businessRegistrationNumber"
                     value={formData.businessRegistrationNumber}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
               </div>
@@ -756,7 +756,7 @@ const EmployerProfiles = () => {
                     name="contactPersonName"
                     value={formData.contactPersonName}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                     required
                   />
                 </div>
@@ -770,7 +770,7 @@ const EmployerProfiles = () => {
                     name="contactPersonTitle"
                     value={formData.contactPersonTitle}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                     required
                   />
                 </div>
@@ -783,7 +783,7 @@ const EmployerProfiles = () => {
                     name="companySize"
                     value={formData.companySize}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                     required
                   >
                     <option value="">Select Company Size</option>
@@ -808,7 +808,7 @@ const EmployerProfiles = () => {
                     name="contactEmail"
                     value={formData.contactEmail}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                     required
                   />
                 </div>
@@ -822,7 +822,7 @@ const EmployerProfiles = () => {
                     name="contactPhone"
                     value={formData.contactPhone}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                     required
                   />
                 </div>
@@ -835,7 +835,7 @@ const EmployerProfiles = () => {
                     name="district"
                     value={formData.district}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                     required
                   >
                     <option value="">Select District</option>
@@ -860,7 +860,7 @@ const EmployerProfiles = () => {
                     name="companyAddress"
                     value={formData.companyAddress}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                     required
                   />
                 </div>
@@ -878,7 +878,7 @@ const EmployerProfiles = () => {
                     name="city"
                     value={formData.city}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                     required
                   />
                 </div>
@@ -892,7 +892,7 @@ const EmployerProfiles = () => {
                     name="postalCode"
                     value={formData.postalCode}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                     required
                   />
                 </div>
@@ -939,7 +939,7 @@ const EmployerProfiles = () => {
                   name="isCurrentlyHiring"
                   checked={formData.isCurrentlyHiring}
                   onChange={handleChange}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-400 rounded"
                 />
                 <label htmlFor="isCurrentlyHiring" className="ml-2 block text-sm font-medium text-gray-700">
                   Currently Hiring
@@ -958,7 +958,7 @@ const EmployerProfiles = () => {
                   value={formData.averageHiresPerMonth}
                   onChange={handleChange}
                   placeholder="e.g., 5-10"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
 
@@ -975,7 +975,7 @@ const EmployerProfiles = () => {
                     onChange={handleChange}
                     onKeyDown={handleAddSkill}
                     placeholder="Type a skill and press Enter"
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="flex-1 px-3 py-2 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
                 <div className="mt-2 flex flex-wrap gap-2">
@@ -1026,7 +1026,7 @@ const EmployerProfiles = () => {
                   rows={4}
                   value={formData.additionalNotes}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Any additional information about your hiring process..."
                 />
               </div>
@@ -1036,7 +1036,7 @@ const EmployerProfiles = () => {
                 <button
                   type="button"
                   onClick={() => navigate('/employer/dashboard')}
-                  className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                  className="px-4 py-2 border border-gray-400 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
                   disabled={isSubmitting}
                 >
                   Cancel
@@ -1125,7 +1125,7 @@ const EmployerProfiles = () => {
                         name="jobPosting.jobTitle"
                         value={formData.jobPostings[formData.currentJobPosting || 0].jobTitle}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full px-3 py-2 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                         required
                       />
                     </div>
@@ -1139,7 +1139,7 @@ const EmployerProfiles = () => {
                         name="jobPosting.department"
                         value={formData.jobPostings[formData.currentJobPosting || 0].department}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full px-3 py-2 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                       />
                     </div>
                     <div>
@@ -1151,7 +1151,7 @@ const EmployerProfiles = () => {
                         name="jobPosting.jobType"
                         value={formData.jobPostings[formData.currentJobPosting || 0].jobType}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full px-3 py-2 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                         required
                       >
                         {jobTypes.map(type => (
@@ -1172,7 +1172,7 @@ const EmployerProfiles = () => {
                         name="jobPosting.experienceLevel"
                         value={formData.jobPostings[formData.currentJobPosting || 0].experienceLevel}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full px-3 py-2 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                         required
                       >
                         {experienceLevels.map(level => (
@@ -1190,7 +1190,7 @@ const EmployerProfiles = () => {
                         name="jobPosting.minSalary"
                         value={formData.jobPostings[formData.currentJobPosting || 0].minSalary}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full px-3 py-2 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                         min="0"
                       />
                     </div>
@@ -1204,7 +1204,7 @@ const EmployerProfiles = () => {
                         name="jobPosting.maxSalary"
                         value={formData.jobPostings[formData.currentJobPosting || 0].maxSalary}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full px-3 py-2 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                         min={formData.jobPostings[formData.currentJobPosting || 0].minSalary || '0'}
                       />
                     </div>
@@ -1221,7 +1221,7 @@ const EmployerProfiles = () => {
                       rows={4}
                       value={formData.jobPostings[formData.currentJobPosting || 0].jobDescription}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                       required
                     />
                   </div>
@@ -1239,7 +1239,7 @@ const EmployerProfiles = () => {
                         onChange={handleChange}
                         onKeyDown={(e) => handleAddSkill(e, 'required')}
                         placeholder="Type a skill and press Enter"
-                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                        className="flex-1 px-3 py-2 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                       />
                     </div>
                     <div className="mt-2 flex flex-wrap gap-2">
@@ -1277,7 +1277,7 @@ const EmployerProfiles = () => {
                         onChange={handleChange}
                         onKeyDown={(e) => handleAddSkill(e, 'requirement')}
                         placeholder="Type a requirement and press Enter"
-                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                        className="flex-1 px-3 py-2 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                       />
                     </div>
                     <ul className="mt-2 list-disc list-inside">
@@ -1308,7 +1308,7 @@ const EmployerProfiles = () => {
                         name="jobPosting.numberOfPositions"
                         value={formData.jobPostings[formData.currentJobPosting || 0].numberOfPositions}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full px-3 py-2 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                         min="1"
                         required
                       />
@@ -1324,7 +1324,7 @@ const EmployerProfiles = () => {
                         value={formData.jobPostings[formData.currentJobPosting || 0].applicationDeadline}
                         onChange={handleChange}
                         min={new Date().toISOString().split('T')[0]}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full px-3 py-2 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                         required
                       />
                     </div>
@@ -1354,7 +1354,7 @@ const EmployerProfiles = () => {
                               }
                             }
                           }}
-                          className="flex-1 px-3 py-2 border border-gray-300 rounded-l-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                          className="flex-1 px-3 py-2 border border-gray-400 rounded-l-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                           placeholder="Type benefit and press Enter"
                         />
                         <button
@@ -1409,7 +1409,7 @@ const EmployerProfiles = () => {
                     <button
                       type="button"
                       onClick={handleCancel}
-                      className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+                      className="px-4 py-2 border border-gray-400 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
                     >
                       Cancel
                     </button>

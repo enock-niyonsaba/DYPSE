@@ -121,7 +121,7 @@ export function Chatbot() {
           <div className="bg-gradient-to-r from-[#0033FF] to-[#000333DD] p-4 text-white flex justify-between items-center">
             <div className="flex items-center space-x-2">
               <FaRobot className="h-5 w-5" />
-              <h3 className="font-semibold">DYPES Assistant</h3>
+              <h3 className="font-semibold">DYPSE Assistant</h3>
             </div>
             <button 
               onClick={() => setIsOpen(false)}

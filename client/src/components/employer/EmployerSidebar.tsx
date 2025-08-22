@@ -33,7 +33,8 @@ import {
   FiActivity,
   FiFileText,
   FiCheckCircle,
-  FiHome
+  FiHome,
+  FiBell
 } from 'react-icons/fi';
 import { FaSearchLocation } from 'react-icons/fa';
 
@@ -148,6 +149,13 @@ const EmployerSidebar: React.FC<EmployerSidebarProps> = ({ isCollapsed, onToggle
       path: '/employer/training-centers' 
     },
     { 
+      name: 'Notifications', 
+      icon: <FiBell className="h-5 w-5" />, 
+      path: '/employer/notifications' 
+    },
+
+    
+    { 
       name: 'Settings', 
       icon: <FiSettings className="h-5 w-5" />, 
       path: '/employer/settings' 
@@ -188,7 +196,7 @@ const EmployerSidebar: React.FC<EmployerSidebarProps> = ({ isCollapsed, onToggle
       <div className="flex items-center justify-between p-4 border-b border-blue-700">
         {!isCollapsed && (
           <Link to="/employer/dashboard" className="flex items-center">
-            <span className="text-white text-xl font-bold">DYPSM</span>
+            <span className="text-white text-xl font-bold">DYPSE</span>
             
           </Link>
         )}
