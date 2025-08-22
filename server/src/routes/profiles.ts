@@ -3,6 +3,7 @@ import { prisma } from '../config/db';
 import { requireAuth, requireRole } from '../middlewares/auth';
 import { z } from 'zod';
 import { CvDocument } from '../models/cvDocument.model';
+import { ProfilePicture } from '../models/profilePicture.model';
 
 const router = Router();
 
@@ -11,7 +12,25 @@ router.get('/me', requireAuth, requireRole(['youth']), async (req, res) => {
     where: { userId: req.auth!.userId },
     include: { educations: true, experiences: true, skills: { include: { skill: true } }, businesses: true },
   });
-  res.json(me);
+  if (!me) return res.json(null);
+  
+  // Attach latest profile picture URL if exists
+  let profilePictureUrl: string | null = null;
+  try {
+    if (me.profilePicId) {
+      const profilePic = await ProfilePicture.findById(me.profilePicId).lean();
+      profilePictureUrl = profilePic?.fileUrl ?? null;
+    }
+  } catch {}
+  
+  // Attach latest CV url if exists
+  let cvUrl: string | null = null;
+  try {
+    const latest = await CvDocument.findOne({ userId: req.auth!.userId }).sort({ createdAt: -1 }).lean();
+    cvUrl = latest?.fileUrl ?? null;
+  } catch {}
+  
+  res.json({ ...me, profilePictureUrl, cvUrl });
 });
 
 const updateSchema = z.object({
@@ -19,21 +38,43 @@ const updateSchema = z.object({
   lastName: z.string().optional(),
   dob: z.string().datetime().optional(),
   gender: z.string().optional(),
-  location: z.string().optional(),
-  latitude: z.number().optional(),
-  longitude: z.number().optional(),
+  // location fields
+  address: z.string().optional(),
+  city: z.string().optional(),
+  state: z.string().optional(),
+  district: z.string().optional(),
+  country: z.string().optional(),
+  postalCode: z.string().optional(),
   bio: z.string().optional(),
   jobStatus: z.enum(['unemployed', 'employed', 'self_employed']).optional(),
-  profilePictureUrl: z.string().url().optional(),
+  phone: z.string().optional(),
 });
 
 router.put('/me', requireAuth, requireRole(['youth']), async (req, res) => {
   const parse = updateSchema.safeParse(req.body);
   if (!parse.success) return res.status(400).json({ error: parse.error.flatten() });
   const data = parse.data as any;
-  if (data.dob) data.dob = new Date(data.dob);
-  const updated = await prisma.youthProfile.update({ where: { userId: req.auth!.userId }, data });
-  res.json(updated);
+  const { phone, ...profileFields } = data;
+  if (profileFields.dob) profileFields.dob = new Date(profileFields.dob);
+
+  // If client passed a UI status (JOB_SEEKER/EMPLOYED/FREELANCER) via jobStatus mapping, set both enums
+  if (data.jobStatus) {
+    // data.jobStatus here came from UI: JOB_SEEKER | EMPLOYED | FREELANCER (we remap below for Prisma JobStatus too)
+    const youthStatus = data.jobStatus === 'JOB_SEEKER' ? 'JOB_SEEKER' : data.jobStatus === 'EMPLOYED' ? 'EMPLOYED' : 'FREELANCER';
+    profileFields.status = youthStatus as any;
+  }
+
+  const tx = await prisma.$transaction(async (tx) => {
+    // Update youth profile
+    const updatedProfile = await tx.youthProfile.update({ where: { userId: req.auth!.userId }, data: profileFields });
+    // Optionally update phone on User
+    if (phone) {
+      await tx.user.update({ where: { id: req.auth!.userId }, data: { phone } });
+    }
+    return updatedProfile;
+  });
+
+  res.json(tx);
 });
 
 export default router;

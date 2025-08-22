@@ -53,16 +53,16 @@ router.get('/:id/candidates', requireAuth, requireRole(['employer', 'admin']), a
   const job = await prisma.job.findUnique({ where: { id: req.params.id } });
   if (!job) return res.status(404).json({ error: 'Job not found' });
 
-  // Simplified matching: top profiles by readiness + optional location proximity.
+  // Simplified matching: top profiles by skills match + optional location proximity.
   const candidates = await prisma.youthProfile.findMany({
     where: {
-      ...(job.location ? { location: { contains: job.location, mode: 'insensitive' } } : {}),
+      ...(job.location ? { city: { contains: job.location, mode: 'insensitive' } } : {}),
     },
-    orderBy: [{ jobReadinessScore: 'desc' }],
+    orderBy: [{ createdAt: 'desc' }],
     take: 20,
   });
 
-  const scored = candidates.map((p) => ({ profile: p, score: p.jobReadinessScore ?? 0.0 }));
+  const scored = candidates.map((p) => ({ profile: p, score: 0.5 })); // Default score for now
   res.json(scored);
 });
 

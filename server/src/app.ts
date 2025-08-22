@@ -6,11 +6,12 @@ import path from 'path';
 import { ensureUploadsDir, UPLOADS_DIR } from './utils/storage';
 import cookieParser from 'cookie-parser';
 import { listRoutes } from './utils/route-utils';
+import { env } from './config/env';
 
 const app = express();
 
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
+  origin: [env.frontendUrl, 'http://localhost:3000', 'http://127.0.0.1:3000'],
   credentials: true
 }));
 app.use(cookieParser());

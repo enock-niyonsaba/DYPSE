@@ -10,7 +10,7 @@
     "start": "node server.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "create-admin": "node ../scripts/createAdmin.ts"
+    "create:admin": "ts-node --transpile-only scripts/createAdmin.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.13.0",

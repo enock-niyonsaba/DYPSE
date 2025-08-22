@@ -19,7 +19,7 @@ const prisma = new PrismaClient({
 async function createAdminUser() {
   console.log('Starting admin user creation process...');
   
-  const adminEmail = 'evodenuby@gmail.com';
+  const adminEmail = 'evodepro6@gmail.com';
   const adminPassword = 'Admin@1234'; // Strong password for the admin user
 
   try {
