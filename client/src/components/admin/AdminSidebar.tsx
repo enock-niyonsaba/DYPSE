@@ -98,7 +98,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ isCollapsed, onToggleSideba
       {!isCollapsed && user && (
         <div className="px-4 py-3 border-b border-indigo-600">
           <p className="text-sm text-indigo-200">Welcome back,</p>
-          <p className="font-medium">{user.firstName || 'Admin'}</p>
+          <p className="font-medium">{(user.firstName && `${user.firstName} ${user.lastName || ''}`.trim()) || (user.email?.split('@')[0]) || 'Admin'}</p>
         </div>
       )}
       {/* Toggle Button */}
@@ -148,7 +148,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ isCollapsed, onToggleSideba
                 <FiUser className="h-4 w-4 text-white" />
               </div>
               <div>
-                <p className="text-sm font-medium">{user.firstName || 'Admin'}</p>
+                <p className="text-sm font-medium">{(user.firstName && `${user.firstName} ${user.lastName || ''}`.trim()) || (user.email?.split('@')[0]) || 'Admin'}</p>
                 <p className="text-xs text-indigo-200 truncate">{user.email}</p>
               </div>
             </div>

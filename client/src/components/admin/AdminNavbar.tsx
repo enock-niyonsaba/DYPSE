@@ -22,6 +22,8 @@ const AdminNavbar: React.FC<AdminNavbarProps> = ({ onToggleSidebar }) => {
     navigate('/login');
   };
 
+  const displayName = (user?.firstName && `${user.firstName} ${user.lastName || ''}`.trim()) || (user?.email?.split('@')[0]) || 'Admin';
+
   return (
     <nav className="bg-[#D9D9D9] px-4 py-3 flex items-center justify-between border-b border-gray-200">
       <div className="flex items-center">
@@ -117,9 +119,7 @@ const AdminNavbar: React.FC<AdminNavbarProps> = ({ onToggleSidebar }) => {
             <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">
               <FiUser className="h-5 w-5" />
             </div>
-            <span className="ml-2 text-sm font-medium text-gray-700 hidden md:inline">
-              {user?.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() || 'Admin' : 'Admin'}
-            </span>
+            <span className="ml-2 text-sm font-medium text-gray-700 hidden md:inline">{displayName}</span>
             <FiChevronDown className="ml-1 h-4 w-4 text-gray-500" />
           </button>
 

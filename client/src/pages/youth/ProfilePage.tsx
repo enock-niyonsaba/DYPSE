@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   UserIcon, EnvelopeIcon, PhoneIcon, 
   MapPinIcon, DocumentTextIcon, PencilIcon,
@@ -12,6 +12,8 @@ import LocationModal from '../../components/modals/LocationModal';
 import SkillsModal from '../../components/modals/SkillsModal';
 import ExperienceModal from '../../components/modals/ExperienceModal';
 import EducationModal from '../../components/modals/EducationModal';
+import { useAuth } from '@/contexts/AuthContext';
+import { profileAPI } from '@/lib/profileApi';
 
 // Types
 interface Experience {
@@ -41,11 +43,12 @@ type UserProfile = {
   phone: string;
   location: LocationData;
   bio: string;
+  status?: 'JOB_SEEKER' | 'EMPLOYED' | 'FREELANCER';
   skills: string[];
   experience: Experience[];
   education: Education[];
-  cvUrl?: string;
-  profilePicture?: string;
+  cvUrl: string | null;
+  profilePicture: string | null;
 };
 
 type PersonalInfo = {
@@ -54,6 +57,7 @@ type PersonalInfo = {
   email: string;
   phone: string;
   bio: string;
+  jobStatus?: 'JOB_SEEKER' | 'EMPLOYED' | 'FREELANCER';
 };
 
 interface LocationData{
@@ -99,116 +103,277 @@ const ProfilePage = () => {
   const [isPersonalInfoModalOpen, setIsPersonalInfoModalOpen] = useState(false);
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
   const [isSkillsModalOpen, setIsSkillsModalOpen] = useState(false);
+  const [isSkillsSaving, setIsSkillsSaving] = useState(false);
   const [isExperienceModalOpen, setIsExperienceModalOpen] = useState(false);
   const [editingExperience, setEditingExperience] = useState<Experience | null>(null);
   const [isEducationModalOpen, setIsEducationModalOpen] = useState(false);
   const [editingEducation, setEditingEducation] = useState<Education | null>(null);
 
-  // Mock user data - replace with your actual data
-  const [user, setUser] = useState<UserProfile>({
-    firstName: 'Evode',
-    lastName: 'SANO',
-    email: 'evodesano@gmail.com',
-    phone: '+250 729 525 550',
-    location: {
-      address: 'KN 4 Ave',
-      city: 'Kigali',
-      country: 'Rwanda',
-      postalCode: '0000',
-      region: 'Gasabo'
-    },
-    bio: 'Software Engineer with 3+ years of experience in web development',
-    profilePicture: '../../images/profile.jpg',
-    skills: ['React', 'TypeScript', 'Node.js', 'GraphQL'],
-    experience: [
-      { 
-        id: '1',
-        employerName: 'Tech Corp',
-        role: 'Senior Developer',
-        startDate: '2025-07-01',
-        endDate: '2025-08-30',
-        isCurrent: false,
-        description: 'Worked on multiple projects'
+  const { user: authUser } = useAuth();
+  const [user, setUser] = useState<UserProfile | null>(null);
+  const [loadingProfile, setLoadingProfile] = useState<boolean>(true);
+
+  const apiBase = (import.meta.env.VITE_API_BASE_URL as string) || 'http://localhost:5000/api';
+  const uploadsBase = apiBase.replace(/\/api\/?$/, '');
+  const toAbsolute = (p: string | null): string | null => {
+    if (!p) return null;
+    return p.startsWith('/uploads/') ? `${uploadsBase}${p}` : p;
+  };
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const me = await profileAPI.getMyProfile();
+        console.log('Profile data received:', me); // Debug log
+        if (!mounted) return;
+        if (!me) {
+          setUser({
+            firstName: authUser?.firstName || '',
+            lastName: authUser?.lastName || '',
+            email: authUser?.email || '',
+            phone: authUser?.phone || '',
+            location: { address: '', city: '', country: '', postalCode: '', region: '' },
+            bio: '',
+            status: 'JOB_SEEKER',
+            skills: [],
+            experience: [],
+            education: [],
+            profilePicture: null,
+            cvUrl: null,
+          });
+        } else {
+          const userData = {
+            firstName: me.firstName || authUser?.firstName || '',
+            lastName: me.lastName || authUser?.lastName || '',
+            email: authUser?.email || '',
+            phone: authUser?.phone || '',
+            location: { address: me.address || '', city: me.city || '', country: me.country || '', postalCode: me.postalCode || '', region: me.district || '' },
+            bio: me.bio || '',
+            status: me.status || 'JOB_SEEKER',
+            skills: (me.skills || []).map((ps: any) => ps.skill?.name).filter(Boolean),
+            experience: (me.experiences || []).map((exp: any) => ({
+              id: exp.id,
+              employerName: exp.employerName,
+              role: exp.role,
+              startDate: exp.startDate || '',
+              endDate: exp.endDate || '',
+              isCurrent: exp.isCurrent,
+              description: exp.description || '',
+            })),
+            education: (me.educations || []).map((ed: any) => ({
+              id: ed.id,
+              degree: ed.degree || '',
+              institution: ed.school || '',
+              fieldOfStudy: ed.fieldOfStudy || '',
+              startDate: ed.startDate || '',
+              endDate: ed.endDate || '',
+              description: '',
+            })),
+            profilePicture: toAbsolute(me.profilePictureUrl || null),
+            cvUrl: toAbsolute(me.cvUrl || null),
+          };
+          console.log('Setting user data:', userData); // Debug log
+          setUser(userData);
+        }
+      } finally {
+        if (mounted) setLoadingProfile(false);
       }
-    ],
-    education: [
-      {
-        id: '1',
-        degree: 'Bachelor of Science',
-        institution: 'University of Technology',
-        fieldOfStudy: 'Computer Science',
-        startDate: '2016-09-01',
-        endDate: '2020-06-01',
-        description: 'Graduated with honors'
-      },
-      { 
-        id: '2',
-        degree: 'Master of Science',
-        institution: 'MIT',
-        fieldOfStudy: 'Computer Science',
-        startDate: '2020-09-01',
-        endDate: '2022-06-01',
-        description: 'Graduated with honors'
-      }
-    ]
-  });
+    })();
+    return () => { mounted = false; };
+  }, [authUser?.id]);
 
   const handleProfilePictureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      console.log('Profile picture file selected:', file); // Debug log
+      // Preview locally
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setUser(prev => ({
-          ...prev,
-          profilePicture: reader.result as string
-        }));
+      reader.onload = () => {
+        setUser(prev => (prev ? { ...prev, profilePicture: reader.result as string } as UserProfile : prev));
       };
       reader.readAsDataURL(file);
+      // upload to backend
+      profileAPI.uploadProfilePicture(file).then(async (response) => {
+        console.log('Profile picture upload response:', response); // Debug log
+        // Refresh profile to get updated data
+        const me = await profileAPI.getMyProfile();
+        console.log('Refreshed profile data after picture upload:', me); // Debug log
+        setUser(prev => (prev ? { ...prev, profilePicture: toAbsolute(me.profilePictureUrl || '') } as UserProfile : prev));
+      }).catch((error) => {
+        console.error('Error uploading profile picture:', error); // Debug log
+      });
     }
   };
 
   const handleSavePersonalInfo = (data: PersonalInfo) => {
-    setUser(prev => ({
-      ...prev,
-      ...data
-    }));
+    console.log('Saving personal info:', data); // Debug log
+    setUser(prev => (prev ? { ...prev, ...data, status: data.jobStatus ?? prev.status } as UserProfile : prev));
+    // Persist to backend and refresh
+    profileAPI.updateMyProfile({
+      firstName: data.firstName,
+      lastName: data.lastName,
+      bio: data.bio,
+      jobStatus: data.jobStatus ? (data.jobStatus === 'JOB_SEEKER' ? 'unemployed' : data.jobStatus === 'EMPLOYED' ? 'employed' : 'self_employed') : undefined,
+      phone: data.phone,
+    }).then(async (response) => {
+      console.log('Personal info update response:', response); // Debug log
+      const me = await profileAPI.getMyProfile();
+      console.log('Refreshed profile data:', me); // Debug log
+      setUser(prev => (prev ? { 
+        ...prev, 
+        firstName: me.firstName || '', 
+        lastName: me.lastName || '', 
+        bio: me.bio || '', 
+        status: me.status || prev.status, 
+        profilePicture: toAbsolute(me.profilePictureUrl || '') 
+      } as UserProfile : prev));
+    }).catch((error) => {
+      console.error('Error saving personal info:', error); // Debug log
+    });
     setIsPersonalInfoModalOpen(false);
   };
 
   const handleSaveLocation = (locationData: LocationData) => {
-    setUser(prev => ({
-      ...prev,
-      location: locationData
-    }));
+    console.log('Saving location data:', locationData); // Debug log
+    setUser(prev => (prev ? { ...prev, location: locationData } as UserProfile : prev));
+    profileAPI.updateMyProfile({
+      address: locationData.address,
+      city: locationData.city,
+      country: locationData.country,
+      postalCode: locationData.postalCode,
+      district: locationData.region,
+    }).then(async (response) => {
+      console.log('Location update response:', response); // Debug log
+      // Refresh profile to get updated data
+      const me = await profileAPI.getMyProfile();
+      console.log('Refreshed profile data after location update:', me); // Debug log
+      setUser(prev => (prev ? { 
+        ...prev, 
+        location: {
+          address: me.address || '',
+          city: me.city || '',
+          country: me.country || '',
+          postalCode: me.postalCode || '',
+          region: me.district || ''
+        }
+      } as UserProfile : prev));
+    }).catch((error) => {
+      console.error('Error saving location:', error); // Debug log
+    });
     setIsLocationModalOpen(false);
   };
 
-  const handleSaveSkills = (skills: string[]) => {
-    setUser(prev => ({ ...prev, skills }));
-    setIsSkillsModalOpen(false);
+  const handleSaveSkills = async (skills: string[]) => {
+    console.log('Saving skills:', skills); // Debug log
+    setIsSkillsSaving(true);
+    try {
+      // Fetch current skill links to compute deletions
+      const current = await profileAPI.getMySkills(); // [{ skill: { id, name }, ... }]
+      console.log('Current skills from API:', current); // Debug log
+      const currentMap = new Map<string, string>(); // nameLower -> id
+      current.forEach((ps: any) => {
+        if (ps?.skill?.name && ps?.skillId) currentMap.set(String(ps.skill.name).toLowerCase(), String(ps.skillId));
+      });
+
+      // Resolve desired names to IDs (best-effort by exact name match)
+      const desiredNames = new Set(skills.map(s => s.trim()).filter(Boolean));
+      const desiredIds: string[] = [];
+      for (const name of desiredNames) {
+        const cached = currentMap.get(name.toLowerCase());
+        if (cached) {
+          desiredIds.push(cached);
+          continue;
+        }
+        const results = await profileAPI.searchSkills(name);
+        const exact = results.find(r => r.name?.toLowerCase() === name.toLowerCase());
+        if (exact) desiredIds.push(exact.id);
+      }
+
+      console.log('Desired skill IDs:', desiredIds); // Debug log
+
+      // Upsert desired
+      await Promise.all(desiredIds.map(id => profileAPI.upsertSkill({ skillId: id, level: 'beginner' })));
+
+      // Delete removed
+      const desiredIdSet = new Set(desiredIds);
+      const toDelete = current.filter((ps: any) => ps?.skillId && !desiredIdSet.has(ps.skillId)).map((ps: any) => ps.skillId as string);
+      console.log('Skills to delete:', toDelete); // Debug log
+      await Promise.all(toDelete.map(id => profileAPI.deleteSkill(id)));
+
+      // Refresh profile
+      const me = await profileAPI.getMyProfile();
+      console.log('Refreshed profile data after skills update:', me); // Debug log
+      setUser(prev => (prev ? { ...prev, skills: (me.skills || []).map((ps: any) => ps.skill?.name).filter(Boolean) } as UserProfile : prev));
+      
+      // Close modal only after successful save
+      setIsSkillsModalOpen(false);
+    } catch (error) {
+      console.error('Error saving skills:', error);
+    } finally {
+      setIsSkillsSaving(false);
+    }
   };
 
   const handleSaveExperience = (experience: Experience) => {
+    console.log('Saving experience:', experience); // Debug log
     setUser(prev => {
-      // If experience has an ID, update existing, otherwise add as new
+      if (!prev) return prev;
       if (experience.id) {
-        return {
-          ...prev,
-          experience: prev.experience.map(exp => 
-            exp.id === experience.id ? experience : exp
-          )
-        };
-      } else {
-        // Add new experience with a new ID
-        return {
-          ...prev,
-          experience: [
-            ...prev.experience,
-            { ...experience, id: Date.now().toString() }
-          ]
-        };
+        return { ...prev, experience: prev.experience.map(exp => exp.id === experience.id ? experience : exp) } as UserProfile;
       }
+      return { ...prev, experience: [...prev.experience, { ...experience, id: Date.now().toString() }] } as UserProfile;
     });
+    // Persist
+    if (experience.id) {
+      profileAPI.updateExperience(experience.id, {
+        employerName: experience.employerName,
+        role: experience.role,
+        startDate: experience.startDate || undefined,
+        endDate: experience.endDate || undefined,
+        description: experience.description,
+        isCurrent: experience.isCurrent,
+      }).then(async (response) => {
+        console.log('Experience update response:', response); // Debug log
+        const me = await profileAPI.getMyProfile();
+        console.log('Refreshed profile data after experience update:', me); // Debug log
+        setUser(prev => (prev ? { ...prev, experience: (me.experiences || []).map((exp: any) => ({ 
+          id: exp.id, 
+          employerName: exp.employerName, 
+          role: exp.role, 
+          startDate: exp.startDate ? new Date(exp.startDate).toISOString().split('T')[0] : '', 
+          endDate: exp.endDate ? new Date(exp.endDate).toISOString().split('T')[0] : '', 
+          isCurrent: exp.isCurrent, 
+          description: exp.description || '' 
+        })) } as UserProfile : prev));
+      }).catch((error) => {
+        console.error('Error updating experience:', error); // Debug log
+      });
+    } else {
+      profileAPI.addExperience({
+        employerName: experience.employerName,
+        role: experience.role,
+        startDate: experience.startDate || undefined,
+        endDate: experience.endDate || undefined,
+        description: experience.description,
+        isCurrent: experience.isCurrent,
+      }).then(async (response) => {
+        console.log('Experience add response:', response); // Debug log
+        const me = await profileAPI.getMyProfile();
+        console.log('Refreshed profile data after experience add:', me); // Debug log
+        setUser(prev => (prev ? { ...prev, experience: (me.experiences || []).map((exp: any) => ({ 
+          id: exp.id, 
+          employerName: exp.employerName, 
+          role: exp.role, 
+          startDate: exp.startDate ? new Date(exp.startDate).toISOString().split('T')[0] : '', 
+          endDate: exp.endDate ? new Date(exp.endDate).toISOString().split('T')[0] : '', 
+          isCurrent: exp.isCurrent, 
+          description: exp.description || '' 
+        })) } as UserProfile : prev));
+      }).catch((error) => {
+        console.error('Error adding experience:', error); // Debug log
+      });
+    }
     setIsExperienceModalOpen(false);
     setEditingExperience(null);
   };
@@ -224,33 +389,91 @@ const ProfilePage = () => {
   };
 
   const handleSaveEducation = (educationData: Omit<Education, 'id'>) => {
+    console.log('Saving education data:', educationData); // Debug log
     if (editingEducation) {
-      setUser(prev => ({
-        ...prev,
-        education: prev.education.map(edu => 
-          edu.id === editingEducation.id ? { ...educationData, id: editingEducation.id } : edu
-        ),
-      }));
+      setUser(prev => (prev ? { ...prev, education: prev.education.map(edu => edu.id === editingEducation.id ? { ...educationData, id: editingEducation.id } : edu) } as UserProfile : prev));
+      profileAPI.updateEducation(editingEducation.id!, {
+        school: educationData.institution,
+        degree: educationData.degree,
+        fieldOfStudy: educationData.fieldOfStudy,
+        startDate: educationData.startDate,
+        endDate: educationData.endDate,
+      }).then(async (response) => {
+        console.log('Education update response:', response); // Debug log
+        const me = await profileAPI.getMyProfile();
+        console.log('Refreshed profile data after education update:', me); // Debug log
+        setUser(prev => (prev ? { ...prev, education: (me.educations || []).map((ed: any) => ({ 
+          id: ed.id, 
+          degree: ed.degree || '', 
+          institution: ed.school || '', 
+          fieldOfStudy: ed.fieldOfStudy || '', 
+          startDate: ed.startDate ? new Date(ed.startDate).toISOString().split('T')[0] : '', 
+          endDate: ed.endDate ? new Date(ed.endDate).toISOString().split('T')[0] : '', 
+          description: '' 
+        })) } as UserProfile : prev));
+      }).catch((error) => {
+        console.error('Error updating education:', error); // Debug log
+      });
     } else {
-      setUser(prev => ({
-        ...prev,
-        education: [
-          ...prev.education,
-          {
-            ...educationData,
-            id: Date.now().toString(),
-          },
-        ],
-      }));
+      setUser(prev => (prev ? { ...prev, education: [...prev.education, { ...educationData, id: Date.now().toString() }] } as UserProfile : prev));
+      profileAPI.addEducation({
+        school: educationData.institution,
+        degree: educationData.degree,
+        fieldOfStudy: educationData.fieldOfStudy,
+        startDate: educationData.startDate,
+        endDate: educationData.endDate,
+      }).then(async (response) => {
+        console.log('Education add response:', response); // Debug log
+        const me = await profileAPI.getMyProfile();
+        console.log('Refreshed profile data after education add:', me); // Debug log
+        setUser(prev => (prev ? { ...prev, education: (me.educations || []).map((ed: any) => ({ 
+          id: ed.id, 
+          degree: ed.degree || '', 
+          institution: ed.school || '', 
+          fieldOfStudy: ed.fieldOfStudy || '', 
+          startDate: ed.startDate ? new Date(ed.startDate).toISOString().split('T')[0] : '', 
+          endDate: ed.endDate ? new Date(ed.endDate).toISOString().split('T')[0] : '', 
+          description: '' 
+        })) } as UserProfile : prev));
+      }).catch((error) => {
+        console.error('Error adding education:', error); // Debug log
+      });
     }
     setIsEducationModalOpen(false);
   };
 
   const handleDeleteEducation = (id: string) => {
-    setUser(prev => ({
-      ...prev,
-      education: prev.education.filter(edu => edu.id !== id),
-    }));
+    setUser(prev => (prev ? { ...prev, education: prev!.education.filter(edu => edu.id !== id) } as UserProfile : prev));
+    profileAPI.deleteEducation(id).then(async () => {
+      // Refresh profile to get updated data
+      const me = await profileAPI.getMyProfile();
+      setUser(prev => (prev ? { ...prev, education: (me.educations || []).map((ed: any) => ({ 
+        id: ed.id, 
+        degree: ed.degree || '', 
+        institution: ed.school || '', 
+        fieldOfStudy: ed.fieldOfStudy || '', 
+        startDate: ed.startDate ? new Date(ed.startDate).toISOString().split('T')[0] : '', 
+        endDate: ed.endDate ? new Date(ed.endDate).toISOString().split('T')[0] : '', 
+        description: '' 
+      })) } as UserProfile : prev));
+    }).catch(() => {/* ignore */});
+  };
+
+  const handleDeleteExperience = (id: string) => {
+    setUser(prev => (prev ? { ...prev, experience: prev!.experience.filter(exp => exp.id !== id) } as UserProfile : prev));
+    profileAPI.deleteExperience(id).then(async () => {
+      // Refresh profile to get updated data
+      const me = await profileAPI.getMyProfile();
+      setUser(prev => (prev ? { ...prev, experience: (me.experiences || []).map((exp: any) => ({ 
+        id: exp.id, 
+        employerName: exp.employerName, 
+        role: exp.role, 
+        startDate: exp.startDate ? new Date(exp.startDate).toISOString().split('T')[0] : '', 
+        endDate: exp.endDate ? new Date(exp.endDate).toISOString().split('T')[0] : '', 
+        isCurrent: exp.isCurrent, 
+        description: exp.description || '' 
+      })) } as UserProfile : prev));
+    }).catch(() => {/* ignore */});
   };
 
   const [cvFileName, setCvFileName] = useState<string>('');
@@ -258,20 +481,29 @@ const ProfilePage = () => {
   const handleCVUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const fileUrl = URL.createObjectURL(file);
+      console.log('CV file selected:', file); // Debug log
       setCvFileName(file.name);
-      setUser(prev => ({ ...prev, cvUrl: fileUrl }));
+      // upload to backend
+      profileAPI.uploadCv(file).then(async ({ fileUrl }) => {
+        console.log('CV upload response:', { fileUrl }); // Debug log
+        // Refresh profile to get updated data
+        const me = await profileAPI.getMyProfile();
+        console.log('Refreshed profile data after CV upload:', me); // Debug log
+        setUser(prev => (prev ? { ...prev, cvUrl: toAbsolute(me.cvUrl || '') } as UserProfile : prev));
+      }).catch((error) => {
+        console.error('Error uploading CV:', error); // Debug log
+      });
     }
   };
 
   const handleViewCV = () => {
-    if (user.cvUrl) {
+    if (user && user.cvUrl) {
       window.open(user.cvUrl, '_blank');
     }
   };
 
   const handleDownloadCV = () => {
-    if (user.cvUrl) {
+    if (user && user.cvUrl) {
       const link = document.createElement('a');
       link.href = user.cvUrl;
       link.download = cvFileName || 'my-cv.pdf';
@@ -280,6 +512,14 @@ const ProfilePage = () => {
       document.body.removeChild(link);
     }
   };
+
+  if (loadingProfile || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <CircularProgress percentage={60} size={80} progressColor="#4F46E5" textColor="#4F56E5" showText={false} />
+      </div>
+    );
+  }
 
   const profileCompletion = calculateProfileCompletion(user);
 
@@ -314,7 +554,7 @@ const ProfilePage = () => {
               <div className="relative group">
                 <img
                   className="h-24 w-24 rounded-full object-cover"
-                  src={user.profilePicture}
+                  src={user.profilePicture || ''}
                   alt={`${user.firstName} ${user.lastName}`}
                 />
                 <label 
@@ -331,7 +571,7 @@ const ProfilePage = () => {
                   onChange={handleProfilePictureChange}
                 />
               </div>
-              <h3 className="mt-2 text-lg font-medium">{user.firstName} {user.lastName}</h3>
+              <h3 className="mt-2 text-lg font-medium">{user.status === 'EMPLOYED' ? 'Employed' : user.status === 'FREELANCER' ? 'Freelancer' : 'Job Seeker'}</h3>
             </div>
             <div className="flex items-center">
               <UserIcon className="h-5 w-5 text-gray-500 mr-3" />
@@ -353,9 +593,15 @@ const ProfilePage = () => {
             <div className="flex items-center">
               <MapPinIcon className="h-5 w-5 text-gray-500 mr-3" />
               <div>
-                <p className="font-medium">{user.location.address}</p>
-                <p className="text-sm text-gray-600">{user.location.city}, {user.location.region}</p>
-                <p className="text-sm text-gray-600">{user.location.country} - {user.location.postalCode}</p>
+                {user.location.address || user.location.city || user.location.country ? (
+                  <>
+                    <p className="font-medium">{user.location.address}</p>
+                    <p className="text-sm text-gray-600">{user.location.city}{user.location.region ? `, ${user.location.region}` : ''}</p>
+                    <p className="text-sm text-gray-600">{user.location.country}{user.location.postalCode ? ` - ${user.location.postalCode}` : ''}</p>
+                  </>
+                ) : (
+                  <p className="text-gray-500">No location records found.</p>
+                )}
               </div>
             </div>
           </div>
@@ -372,13 +618,17 @@ const ProfilePage = () => {
           onEdit={() => setIsSkillsModalOpen(true)}
           className="mb-6"
         >
-          <div className="flex flex-wrap gap-2">
-            {user.skills.map((skill, index) => (
-              <span key={index} className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                {skill}
-              </span>
-            ))}
-          </div>
+          {user.skills.length > 0 ? (
+            <div className="flex flex-wrap gap-2">
+              {user.skills.map((skill, index) => (
+                <span key={index} className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                  {skill}
+                </span>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-500">No skills found.</p>
+          )}
         </ProfileCard>
 
         {/* Experience Card */}
@@ -398,16 +648,47 @@ const ProfilePage = () => {
           }}
           className="mb-6"
         >
-          {user.experience.map((exp, _index) => (
-            <div key={exp.id} className="mb-4">
-              <h4 className="font-medium">{exp.role}</h4>
-              <p className="text-sm text-gray-600">{exp.employerName}</p>
-              <p className="text-xs text-gray-500">
-                {new Date(exp.startDate).toLocaleDateString()} - {exp.isCurrent ? 'Present' : new Date(exp.endDate).toLocaleDateString()}
-              </p>
-              {exp.description && <p className="mt-1 text-sm text-gray-700">{exp.description}</p>}
-            </div>
-          ))}
+          {user.experience.length > 0 ? (
+            user.experience.map((exp, _index) => (
+              <div key={exp.id} className="mb-4">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h4 className="font-medium">{exp.role}</h4>
+                    <p className="text-sm text-gray-600">{exp.employerName}</p>
+                    <p className="text-xs text-gray-500">
+                      {exp.startDate ? new Date(exp.startDate).toLocaleDateString() : ''} - {exp.isCurrent ? 'Present' : (exp.endDate ? new Date(exp.endDate).toLocaleDateString() : '')}
+                    </p>
+                    {exp.description && <p className="mt-1 text-sm text-gray-700">{exp.description}</p>}
+                  </div>
+                  <div className="flex space-x-2">
+                    <button 
+                      onClick={() => {
+                        setEditingExperience(exp);
+                        setIsExperienceModalOpen(true);
+                      }}
+                      className="text-blue-600 hover:text-blue-800"
+                      aria-label="Edit experience"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                    </button>
+                    <button 
+                      onClick={() => handleDeleteExperience(exp.id!)}
+                      className="text-red-600 hover:text-red-800"
+                      aria-label="Delete experience"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-500">No experience records found.</p>
+          )}
         </ProfileCard>
 
         {/* Education Section */}
@@ -560,7 +841,9 @@ const ProfilePage = () => {
           isOpen={isSkillsModalOpen}
           onClose={() => setIsSkillsModalOpen(false)}
           onSave={handleSaveSkills}
-          skills={user.skills} isSaving={false}      />
+          skills={user.skills} 
+          isSaving={isSkillsSaving}
+      />
     )}
 
     {/* Experience Modal */}

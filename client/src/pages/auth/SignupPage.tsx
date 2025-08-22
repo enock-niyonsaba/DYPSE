@@ -55,7 +55,7 @@ export function SignupPage() {
 
     try {
       setLoading(true);
-      await register({
+      const result = await register({
         email: formData.email,
         password: formData.password,
         role: formData.role,
@@ -65,10 +65,8 @@ export function SignupPage() {
       });
       
       setSuccess(true);
-      // Redirect to login after a short delay
-      setTimeout(() => {
-        navigate('/login', { state: { email: formData.email } });
-      }, 2000);
+      // Navigate to login immediately after successful registration
+      navigate('/login', { state: { email: formData.email, justRegistered: true } });
     } catch (err) {
       console.error('Registration error:', err);
       setError(err instanceof Error ? err.message : 'Failed to create account. Please try again.');

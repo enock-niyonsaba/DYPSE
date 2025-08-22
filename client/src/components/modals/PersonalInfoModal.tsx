@@ -8,6 +8,7 @@ interface PersonalInfo {
   email: string;
   phone: string;
   bio: string;
+  jobStatus?: 'JOB_SEEKER' | 'EMPLOYED' | 'FREELANCER';
 }
 
 interface PersonalInfoModalProps {
@@ -23,7 +24,8 @@ export default function PersonalInfoModal({ isOpen, onClose, info, onSave, isSav
     firstName: '',
     lastName: '',
     phone: '',
-    bio: ''
+    bio: '',
+    jobStatus: 'JOB_SEEKER'
   });
   
   const [email, setEmail] = useState('');
@@ -128,6 +130,21 @@ export default function PersonalInfoModal({ isOpen, onClose, info, onSave, isSav
                         required
                       />
                     </div>
+                  </div>
+
+                  <div>
+                    <label htmlFor="jobStatus" className={labelClasses}>Status</label>
+                    <select
+                      id="jobStatus"
+                      name="jobStatus"
+                      value={formData.jobStatus}
+                      onChange={handleChange as any}
+                      className={inputClasses}
+                    >
+                      <option value="JOB_SEEKER">Job Seeker</option>
+                      <option value="EMPLOYED">Employed</option>
+                      <option value="FREELANCER">Freelancer</option>
+                    </select>
                   </div>
 
                   <div>

@@ -12,6 +12,8 @@ export interface User {
   phone?: string;
   role: 'youth' | 'employer' | 'admin' | 'verifier';
   isEmailVerified?: boolean;
+  companyName?: string;
+  contactName?: string;
   profile?: any; 
 }
 
@@ -56,6 +58,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             phone: userData.phone,
             role: userData.role,
             isEmailVerified: userData.isEmailVerified,
+            companyName: (userData as any).companyName,
+            contactName: (userData as any).contactName,
             profile: userData.profile
           };
           setUser(user);
@@ -72,79 +76,82 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const login = async (email: string, password: string): Promise<{ success: boolean; message?: string }> => {
+    setLoading(true);
+    
+    // Validate input
+    if (!email || !password) {
+      setLoading(false);
+      return { success: false, message: 'Please enter both email and password' };
+    }
+    
+    // Network guard
+    if (!navigator.onLine) {
+      setLoading(false);
+      return { success: false, message: 'No internet connection. Please check your network.' };
+    }
+
     try {
-      setLoading(true);
-      
-      // Validate input
-      if (!email || !password) {
-        return { success: false, message: 'Please enter both email and password' };
+      const data = await authAPI.login({ email, password });
+      if (!data?.token) {
+        setLoading(false);
+        return { success: false, message: 'Authentication failed. Please try again.' };
       }
-      
-      // Check for network connectivity
-      if (!navigator.onLine) {
-        throw { code: 'NETWORK_ERROR', message: 'No internet connection. Please check your network.' };
-      }
-      
-      try {
-        const data = await authAPI.login({ email, password });
-        
-        if (!data?.token) {
-          throw new Error('No authentication token received');
-        }
-        
-        // Get user data after successful login
-        const userData = await authAPI.getCurrentUser();
-        
-        const user: User = {
-          id: userData.id,
-          email: userData.email,
-          firstName: userData.firstName,
-          lastName: userData.lastName,
-          phone: userData.phone,
-          role: userData.role,
-          isEmailVerified: userData.isEmailVerified || false,
-          profile: userData.profile
-        };
-        
-        setUser(user);
-        toast.success('Login successful!');
-        
-        // Redirect based on user role
-        const redirectPath = {
-          'admin': '/admin',
-          'employer': '/employer/dashboard',
-          'youth': '/youth/dashboard',
-          'verifier': '/verifier/dashboard'
-        }[user.role] || '/dashboard';
-        
-        navigate(redirectPath);
-        return { success: true };
-        
-      } catch (apiError: any) {
-        console.error('API Error during login:', apiError);
-        throw apiError; // Re-throw to be caught by outer catch
-      }
-      
+
+      // Get user data after successful login
+      const userData = await authAPI.getCurrentUser();
+      const user: User = {
+        id: userData.id,
+        email: userData.email,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        phone: userData.phone,
+        role: userData.role,
+        isEmailVerified: userData.isEmailVerified || false,
+        companyName: (userData as any).companyName,
+        contactName: (userData as any).contactName,
+        profile: userData.profile
+      };
+
+      setUser(user);
+      toast.success('Login successful!');
+
+      const redirectPath = {
+        'admin': '/admin',
+        'employer': '/employer/dashboard',
+        'youth': '/youth/dashboard',
+        'verifier': '/verifier/dashboard'
+      }[user.role] || '/dashboard';
+      navigate(redirectPath);
+      setLoading(false);
+      return { success: true };
+
     } catch (error: any) {
-      console.error('Login failed:', error);
-      
-      // Handle different types of errors
+      // Map errors to message without throwing
       let message = 'Login failed. Please try again.';
-      
-      if (error.code === 'NETWORK_ERROR' || error.code === 'ERR_NETWORK' || !window.navigator.onLine) {
+
+      const status = error?.response?.status;
+      const data = error?.response?.data as any;
+
+      if (status === 401) {
+        message = 'Invalid username or password.';
+      } else if (status === 400) {
+        // Try to extract Zod validation messages
+        const details = data?.details;
+        const fieldErrors = details?.fieldErrors;
+        const formErrors = details?.formErrors;
+        const firstFieldError = fieldErrors && Object.values(fieldErrors).flat().find(Boolean);
+        const firstFormError = Array.isArray(formErrors) && formErrors.find(Boolean);
+        message = (firstFieldError as string) || (firstFormError as string) || data?.error || 'Invalid input.';
+      } else if (error?.code === 'ERR_NETWORK' || !window.navigator.onLine) {
         message = 'Network error. Please check your internet connection.';
-      } else if (error.response?.status === 401) {
-        message = 'Invalid email or password. Please try again.';
-      } else if (error.response?.data?.message) {
-        message = error.response.data.message;
-      } else if (error.message) {
+      } else if (data?.message) {
+        message = data.message;
+      } else if (error?.message) {
         message = error.message;
       }
-      
-      return { success: false, message };
-      
-    } finally {
+
       setLoading(false);
+      return { success: false, message };
     }
   };
 
@@ -174,23 +181,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
       
       try {
-        // Register the user
+        // Register the user (do not auto-login)
         await authAPI.register(userData);
-        toast.success('Registration successful! Logging you in...');
-        
-        // After successful registration, log the user in
-        const loginResult = await login(userData.email, userData.password);
-        
-        if (!loginResult.success) {
-          // If login fails after registration, still consider it a success but with a message
-          return { 
-            success: true, 
-            message: 'Registration successful! Please log in with your credentials.' 
-          };
-        }
-        
-        return { success: true };
-        
+        toast.success('Registration successful! Please log in.');
+
+        return { success: true, message: 'Registration successful! Please log in.' };
+
       } catch (apiError: any) {
         console.error('API Error during registration:', apiError);
         throw apiError; // Re-throw to be caught by outer catch

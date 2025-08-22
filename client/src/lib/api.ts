@@ -55,8 +55,9 @@ api.interceptors.response.use(
   (response: AxiosResponse): AxiosResponse => response,
   (error: AxiosError<ApiResponse>): Promise<never> => {
     if (error.response?.status === 401) {
+      // Remove any invalid/expired token and let callers handle navigation
       localStorage.removeItem('token');
-      window.location.href = '/login';
+      return Promise.reject(error);
     }
     return Promise.reject(error);
   }

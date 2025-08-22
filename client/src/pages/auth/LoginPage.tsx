@@ -8,6 +8,7 @@ import { NavBar } from '../../components/layout/NavBar';
 import { Chatbot } from '@/components/chatbot/Chatbot';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'react-hot-toast';
+import { loginRequest } from '@/lib/authClient';
 
 export function LoginPage() {
   const [email, setEmail] = useState('');
@@ -22,8 +23,10 @@ export function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isLoading) return; // Guard against double submits
     
 // Clear previous errors
+    setError('');
     
     // Basic validation
     if (!email.trim()) {
@@ -40,12 +43,25 @@ export function LoginPage() {
       setIsLoading(true);
       setNetworkError(false);
       
-      // Call login and handle the response
+      // Call the new lightweight client first for deterministic error handling
+      try {
+        const { token } = await loginRequest(email, password);
+        localStorage.setItem('token', token);
+      } catch (e: any) {
+        const msg = e?.message || 'Invalid username or password. Please try again.';
+        setError(msg);
+        toast.error(msg, { position: 'top-center', duration: 4000 });
+        setIsLoading(false);
+        return;
+      }
+
+      // After obtaining a token, let the AuthContext perform user fetch and redirect
       const result = await login(email, password);
-      
-      // If login was not successful, show the error message
       if (!result.success) {
-        setError(result.message || 'Invalid email or password. Please try again.');
+        const msg = result.message || 'Login failed. Please try again.';
+        setError(msg);
+        toast.error(msg, { position: 'top-center', duration: 4000 });
+        setIsLoading(false);
         return;
       }
       
@@ -54,14 +70,14 @@ export function LoginPage() {
     } catch (err: any) {
       console.error('Login error:', err);
       
-      let errorMessage = 'Invalid email or password. Please try again.';
+      let errorMessage = 'Invalid username or password. Please try again.';
       
       // Handle network errors specifically
       if (err.code === 'ERR_NETWORK' || !window.navigator.onLine) {
         setNetworkError(true);
         errorMessage = 'Network error. Please check your internet connection and try again.';
       } else if (err.response?.status === 401) {
-        errorMessage = 'Invalid email or password. Please check your credentials and try again.';
+        errorMessage = 'Invalid username or password. Please check your credentials and try again.';
       } else if (err.response?.data?.message) {
         errorMessage = err.response.data.message;
       } else if (err.message) {
@@ -174,10 +190,6 @@ export function LoginPage() {
                       // Clear error when user starts typing
                       if (error) setError('');
                     }}
-                    onFocus={() => {
-                      // Clear error when user focuses on the input
-                      if (error) setError('');
-                    }}
                   />
                 </div>
 
@@ -201,10 +213,6 @@ export function LoginPage() {
                     onChange={(e) => {
                       setPassword(e.target.value);
                       // Clear error when user starts typing
-                      if (error) setError('');
-                    }}
-                    onFocus={() => {
-                      // Clear error when user focuses on the input
                       if (error) setError('');
                     }}
                   />
