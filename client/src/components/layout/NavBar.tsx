@@ -5,7 +5,11 @@ import { FiMenu, FiX } from 'react-icons/fi';
 
 const navigation = [
   { name: 'Home', href: '/' },
-  { name: 'About Us', href: '/about-us' },
+  { name: 'About', href: '/about' },
+  { name: 'Problem', href: '/problem-statement' },
+  { name: 'Solution', href: '/solution' },
+  { name: 'Features', href: '/features' },
+  { name: 'Entrepreneurship', href: '/entrepreneurship' },
   { name: 'Contact', href: '/contact' },
 ];
 

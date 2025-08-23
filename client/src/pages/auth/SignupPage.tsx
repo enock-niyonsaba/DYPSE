@@ -1,14 +1,14 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import { FaUser, FaEnvelope, FaPhone, FaLock, FaEye, FaEyeSlash, FaExclamationCircle, FaCheckCircle } from 'react-icons/fa';
-import { Card, CardHeader, CardDescription, CardContent, CardFooter } from '@/components/ui/Card';
+import { Link, useNavigate } from 'react-router-dom';
+
 import { GoogleSignInButton } from '@/components/auth/GoogleSignInButton';
-import { primaryGradient } from '@/theme';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { NavBar } from '@/components/layout/NavBar';
-import { useAuth } from '@/contexts/AuthContext';
 import { Chatbot } from '@/components/chatbot/Chatbot';
+import { NavBar } from '@/components/layout/NavBar';
+import { Button } from '@/components/ui/Button';
+import { Card, CardHeader, CardDescription, CardContent, CardFooter } from '@/components/ui/Card';
+import { Input } from '@/components/ui/Input';
+import { useAuth } from '@/contexts/AuthContext';
 
 export function SignupPage() {
   const [formData, setFormData] = useState({
@@ -80,13 +80,59 @@ export function SignupPage() {
   
   };
 
-  return (
-    <div className="min-h-screen bg-gray-50">
+    return (
+    <div className="min-h-screen bg-gradient-to-r from-[#0033FF] to-[#000333DD] relative overflow-hidden">
       <NavBar />
-      <div className={`flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 ${primaryGradient} bg-cover bg-center`}>
+      
+      {/* Animated Background Lines */}
+      <div className="absolute inset-0 overflow-hidden opacity-20 pointer-events-none">
+        <svg className="w-full h-full">
+          {Array.from({ length: 8 }, (_, i) => {
+            const isDiagonal = Math.random() > 0.5;
+            const startFromLeft = Math.random() > 0.5;
+            const startFromTop = Math.random() > 0.5;
+            
+            const x1 = startFromLeft ? Math.random() * 40 : 60 + Math.random() * 40;
+            const y1 = startFromTop ? Math.random() * 50 : 30 + Math.random() * 70;
+            const x2 = isDiagonal 
+              ? (startFromLeft ? x1 + 20 + Math.random() * 30 : x1 - 20 - Math.random() * 30)
+              : x1;
+            const y2 = isDiagonal 
+              ? (startFromTop ? y1 + 20 + Math.random() * 30 : y1 - 20 - Math.random() * 30)
+              : (startFromTop ? y1 + 20 + Math.random() * 30 : y1 - 20 - Math.random() * 30);
+            
+            const length = Math.sqrt(
+              Math.pow(x2 - x1, 2) + 
+              Math.pow(y2 - y1, 2)
+            );
+            const duration = 10 + (length / 20);
+            
+            return (
+              <line
+                key={i}
+                x1={`${x1}%`}
+                y1={`${y1}%`}
+                x2={`${x2}%`}
+                y2={`${y2}%`}
+                stroke="white"
+                strokeWidth="1.5"
+                strokeDasharray="8,4"
+                className="animate-dash"
+                style={{
+                  animationDuration: `${duration}s`,
+                  animationDelay: `${Math.random() * 5}s`,
+                  opacity: 0.6 + Math.random() * 0.4,
+                }}
+              />
+            );
+          })}
+        </svg>
+      </div>
+      
+      <div className="flex items-center justify-center min-h-screen py-12 px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="w-full max-w-md">
           <Card className="w-full bg-white/90 backdrop-blur-sm shadow-xl overflow-hidden">
-            <div className="px-8 py-2 bg-gradient-to-r from-blue-600 to-purple-600">
+            <div className="px-8 py-2 bg-gradient-to-r from-[#0033FF] to-[#000333DD]">
               <h1 className="text-2xl font-bold text-white text-center py-2">DYPSE</h1>
             </div>
             <CardHeader className="space-y-1 text-center pb-2">
@@ -290,7 +336,7 @@ export function SignupPage() {
                           required
                           value={formData.confirmPassword}
                           onChange={handleChange}
-                          className="pl-10 pr-10 w-full border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rounded-md shadow-sm"
+                          className="pl-10 pr-10 w-full border-gray-300 focus:ring-2 focus:ring-[#0033FF] focus:border-[#0033FF] rounded-md shadow-sm"
                           placeholder="Confirm your password"
                           disabled={loading}
                         />
@@ -320,17 +366,17 @@ export function SignupPage() {
                           required
                           checked={agreedToTerms}
                           onChange={(e) => setAgreedToTerms(e.target.checked)}
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                          className="h-4 w-4 text-[#0033FF] focus:ring-[#0033FF] border-gray-300 rounded"
                         />
                       </div>
                       <div className="ml-3 text-sm">
                         <label htmlFor="terms" className="font-medium text-gray-700">
                           I agree to the{' '}
-                          <Link to="/terms" className="text-blue-600 hover:text-blue-500">
+                          <Link to="/terms" className="text-[#0033FF] hover:text-[#000333DD]">
                             Terms of Service
                           </Link>{' '}
                           and{' '}
-                          <Link to="/privacy" className="text-blue-600 hover:text-blue-500">
+                          <Link to="/privacy" className="text-[#0033FF] hover:text-[#000333DD]">
                             Privacy Policy
                           </Link>
                         </label>
@@ -339,7 +385,7 @@ export function SignupPage() {
 
                     <Button
                       type="submit"
-                      className={`w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${!agreedToTerms || loading ? 'bg-blue-400 hover:bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
+                      className={`w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0033FF] ${!agreedToTerms || loading ? 'bg-gray-400 hover:bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-[#0033FF] to-[#000333DD] hover:from-blue-700 hover:to-blue-800'}`}
                       disabled={!agreedToTerms || loading}
                     >
                       {loading ? 'Creating account...' : 'Create account'}
@@ -352,7 +398,7 @@ export function SignupPage() {
             <CardFooter className="flex justify-center py-4 border-t border-gray-200">
               <p className="text-sm text-gray-600">
                 Already have an account?{' '}
-                <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500">
+                <Link to="/login" className="font-medium text-[#0033FF] hover:text-[#000333DD]">
                   Sign in
                 </Link>
               </p>

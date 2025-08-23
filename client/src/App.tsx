@@ -3,6 +3,10 @@ import { AuthProvider, ProtectedRoute } from './contexts/AuthContext';
 import { NotificationProvider } from './contexts/NotificationContext';
 import { HomePage } from './pages/HomePage';
 import { AboutUsPage } from './pages/AboutUsPage';
+import { ProblemStatementPage } from './pages/ProblemStatementPage';
+import { SolutionPage } from './pages/SolutionPage';
+import { FeaturesPage } from './pages/FeaturesPage';
+import { EntrepreneurshipPage } from './pages/EntrepreneurshipPage';
 import { ContactUsPage } from './pages/ContactUsPage';
 import { LoginPage } from './pages/auth/LoginPage';
 import { SignupPage } from './pages/auth/SignupPage';
@@ -44,7 +48,11 @@ function App() {
           <Routes>
           {/* Public routes */}
           <Route path="/" element={<HomePage />} />
-          <Route path="/about-us" element={<AboutUsPage />} />
+          <Route path="/about" element={<AboutUsPage />} />
+          <Route path="/problem-statement" element={<ProblemStatementPage />} />
+          <Route path="/solution" element={<SolutionPage />} />
+          <Route path="/features" element={<FeaturesPage />} />
+          <Route path="/entrepreneurship" element={<EntrepreneurshipPage />} />
           <Route path="/contact" element={<ContactUsPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />

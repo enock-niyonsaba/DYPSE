@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash, FaSpinner } from 'react-icons/fa';
 import { Card, CardHeader, CardDescription, CardContent, CardFooter } from '@/components/ui/Card';
 import { GoogleSignInButton } from '@/components/auth/GoogleSignInButton';
-import { primaryGradient } from '@/theme';
+
 import { NavBar } from '../../components/layout/NavBar';
 import { Chatbot } from '@/components/chatbot/Chatbot';
 import { useAuth } from '@/contexts/AuthContext';
@@ -112,12 +112,58 @@ export function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-r from-[#0033FF] to-[#000333DD] relative overflow-hidden">
       <NavBar />
-      <div className={`flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 ${primaryGradient} bg-cover bg-center`}>
-      <div className="w-full max-w-md">
+      
+      {/* Animated Background Lines */}
+      <div className="absolute inset-0 overflow-hidden opacity-20 pointer-events-none">
+        <svg className="w-full h-full">
+          {Array.from({ length: 8 }, (_, i) => {
+            const isDiagonal = Math.random() > 0.5;
+            const startFromLeft = Math.random() > 0.5;
+            const startFromTop = Math.random() > 0.5;
+            
+            const x1 = startFromLeft ? Math.random() * 40 : 60 + Math.random() * 40;
+            const y1 = startFromTop ? Math.random() * 50 : 30 + Math.random() * 70;
+            const x2 = isDiagonal 
+              ? (startFromLeft ? x1 + 20 + Math.random() * 30 : x1 - 20 - Math.random() * 30)
+              : x1;
+            const y2 = isDiagonal 
+              ? (startFromTop ? y1 + 20 + Math.random() * 30 : y1 - 20 - Math.random() * 30)
+              : (startFromTop ? y1 + 20 + Math.random() * 30 : y1 - 20 - Math.random() * 30);
+            
+            const length = Math.sqrt(
+              Math.pow(x2 - x1, 2) + 
+              Math.pow(y2 - y1, 2)
+            );
+            const duration = 10 + (length / 20);
+            
+            return (
+              <line
+                key={i}
+                x1={`${x1}%`}
+                y1={`${y1}%`}
+                x2={`${x2}%`}
+                y2={`${y2}%`}
+                stroke="white"
+                strokeWidth="1.5"
+                strokeDasharray="8,4"
+                className="animate-dash"
+                style={{
+                  animationDuration: `${duration}s`,
+                  animationDelay: `${Math.random() * 5}s`,
+                  opacity: 0.6 + Math.random() * 0.4,
+                }}
+              />
+            );
+          })}
+        </svg>
+      </div>
+      
+      <div className="flex items-center justify-center min-h-screen py-12 px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="w-full max-w-md">
         <Card className="w-full bg-white/90 backdrop-blur-sm shadow-xl overflow-hidden">
-          <div className="px-8 py-2 bg-gradient-to-r from-blue-600 to-purple-600">
+          <div className="px-8 py-2 bg-gradient-to-r from-[#0033FF] to-[#000333DD]">
             <h1 className="text-2xl font-bold text-white text-center py-2">DYPSE</h1>
           </div>
           <CardHeader className="space-y-1 text-center pb-2">
@@ -182,7 +228,7 @@ export function LoginPage() {
                     autoComplete="email"
                     required
                     disabled={isLoading}
-                    className={`pl-10 appearance-none relative block w-full px-3 py-2 border ${error ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-transparent'} placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 sm:text-sm transition-colors`}
+                    className={`pl-10 appearance-none relative block w-full px-3 py-2 border ${error ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-[#0033FF] focus:border-transparent'} placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 sm:text-sm transition-colors`}
                     placeholder="Email address"
                     value={email}
                     onChange={(e) => {
@@ -206,7 +252,7 @@ export function LoginPage() {
                     type={showPassword ? "text" : "password"}
                     autoComplete="current-password"
                     required
-                    className={`pl-10 pr-10 appearance-none relative block w-full px-3 py-2 border ${error ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-transparent'} placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 sm:text-sm transition-colors`}
+                    className={`pl-10 pr-10 appearance-none relative block w-full px-3 py-2 border ${error ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-[#0033FF] focus:border-transparent'} placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 sm:text-sm transition-colors`}
                     placeholder="Password"
                     value={password}
                     disabled={isLoading}
@@ -235,7 +281,7 @@ export function LoginPage() {
                       id="remember-me"
                       name="remember-me"
                       type="checkbox"
-                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                      className="h-4 w-4 text-[#0033FF] focus:ring-[#0033FF] border-gray-300 rounded"
                       checked={rememberMe}
                       onChange={(e) => setRememberMe(e.target.checked)}
                     />
@@ -245,7 +291,7 @@ export function LoginPage() {
                   </div>
 
                   <div className="text-sm">
-                    <Link to="/forgot-password" className="font-medium text-blue-600 hover:text-blue-500">
+                    <Link to="/forgot-password" className="font-medium text-[#0033FF] hover:text-[#000333DD]">
                       Forgot password?
                     </Link>
                   </div>
@@ -255,7 +301,7 @@ export function LoginPage() {
                   <button
                     type="submit"
                     disabled={isLoading || !email.trim() || !password}
-                    className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors ${isLoading || !email.trim() || !password ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500'}`}
+                    className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors ${isLoading || !email.trim() || !password ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-[#0033FF] to-[#000333DD] hover:from-blue-700 hover:to-blue-800 focus:ring-[#0033FF]'}`}
                   >
                     {isLoading ? (
                       <>
@@ -272,7 +318,7 @@ export function LoginPage() {
               Don't have an account?{' '}
               <Link 
                 to="/signup" 
-                className="ml-1 font-medium text-blue-600 hover:text-blue-500 hover:underline"
+                className="ml-1 font-medium text-[#0033FF] hover:text-[#000333DD] hover:underline"
               >
                 Sign up
               </Link>
