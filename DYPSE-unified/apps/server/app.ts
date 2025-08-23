@@ -1,12 +1,12 @@
 import express from 'express';
 import cors from 'cors';
 import { json, urlencoded } from 'express';
-import routes from './routes';
+import routes from './src/routes';
 import path from 'path';
-import { ensureUploadsDir, UPLOADS_DIR } from './utils/storage';
+import { ensureUploadsDir, UPLOADS_DIR } from './src/utils/storage';
 import cookieParser from 'cookie-parser';
-import { listRoutes } from './utils/route-utils';
-import { env } from './config/env';
+import { listRoutes } from './src/utils/route-utils';
+import { env } from './src/config/env';
 
 const app = express();
 

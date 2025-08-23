@@ -1,4 +1,4 @@
-import app from '../src/app';
+import app from '../app';
 import { getRoutes } from '../src/utils/route-utils';
 import {Express}  from 'express';
 

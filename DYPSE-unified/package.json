@@ -1,0 +1,53 @@
+{
+  "name": "dypse",
+  "version": "1.0.0",
+  "description": "Digital Youth Professional Skills & Employment Platform",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:client": "cd apps/client && npm run dev",
+    "dev:server": "cd apps/server && npm run dev",
+    "build": "npm run build:client && npm run build:server",
+    "build:client": "cd apps/client && npm run build",
+    "build:server": "cd apps/server && npm run build",
+    "start": "cd apps/server && npm start",
+    "test": "npm run test:client && npm run test:server",
+    "test:client": "cd apps/client && npm run test",
+    "test:server": "cd apps/server && npm run test",
+    "lint": "npm run lint:client && npm run lint:server",
+    "lint:client": "cd apps/client && npm run lint",
+    "lint:server": "cd apps/server && npm run lint",
+    "clean": "rimraf apps/*/node_modules apps/*/dist packages/*/node_modules packages/*/dist node_modules",
+    "setup": "npm install && npm run setup:client && npm run setup:server",
+    "setup:client": "cd apps/client && npm install",
+    "setup:server": "cd apps/server && npm install",
+    "docker:build": "docker build -t dypse .",
+    "docker:run": "docker run -p 3000:3000 -p 5000:5000 dypse"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "rimraf": "^5.0.5"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "author": "DYPSE Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/dypse.git"
+  },
+  "keywords": [
+    "youth",
+    "employment",
+    "skills",
+    "react",
+    "nodejs",
+    "typescript"
+  ]
+}

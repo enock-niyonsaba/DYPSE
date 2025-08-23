@@ -14,7 +14,7 @@
       "./src/types"
     ]
   },
-  "include": ["src/**/*.ts", "scripts/**/*.ts"],
+  "include": ["src/**/*.ts", "scripts/**/*.ts", "app.ts", "server.ts"],
   "exclude": ["node_modules"]
 }
 

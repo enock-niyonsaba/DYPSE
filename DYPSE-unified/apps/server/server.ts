@@ -1,7 +1,7 @@
 import express from 'express';
 import app from './app';
-import { connectMongoDB } from './config/mongodb';
-import authRouter from './routes/auth';
+import { connectMongoDB } from './src/config/mongodb';
+import authRouter from './src/routes/auth';
 import dotenv from 'dotenv';
 
 async function start() {

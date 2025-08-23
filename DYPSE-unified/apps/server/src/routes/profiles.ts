@@ -1,15 +1,15 @@
 import { Router } from 'express';
 import { prisma } from '../config/db';
-import { requireAuth, requireRole } from '../middlewares/auth';
+import { authenticateToken, requireYouth } from '../middlewares/auth';
 import { z } from 'zod';
 import { CvDocument } from '../models/cvDocument.model';
 import { ProfilePicture } from '../models/profilePicture.model';
 
 const router = Router();
 
-router.get('/me', requireAuth, requireRole(['youth']), async (req, res) => {
+router.get('/me', authenticateToken, requireYouth, async (req, res) => {
   const me = await prisma.youthProfile.findUnique({
-    where: { userId: req.auth!.userId },
+    where: { userId: req.user!.userId },
     include: { educations: true, experiences: true, skills: { include: { skill: true } }, businesses: true },
   });
   if (!me) return res.json(null);
@@ -26,7 +26,7 @@ router.get('/me', requireAuth, requireRole(['youth']), async (req, res) => {
   // Attach latest CV url if exists
   let cvUrl: string | null = null;
   try {
-    const latest = await CvDocument.findOne({ userId: req.auth!.userId }).sort({ createdAt: -1 }).lean();
+    const latest = await CvDocument.findOne({ userId: req.user!.userId }).sort({ createdAt: -1 }).lean();
     cvUrl = latest?.fileUrl ?? null;
   } catch {}
   
@@ -50,7 +50,7 @@ const updateSchema = z.object({
   phone: z.string().optional(),
 });
 
-router.put('/me', requireAuth, requireRole(['youth']), async (req, res) => {
+router.put('/me', authenticateToken, requireYouth, async (req, res) => {
   const parse = updateSchema.safeParse(req.body);
   if (!parse.success) return res.status(400).json({ error: parse.error.flatten() });
   const data = parse.data as any;
@@ -66,10 +66,10 @@ router.put('/me', requireAuth, requireRole(['youth']), async (req, res) => {
 
   const tx = await prisma.$transaction(async (tx) => {
     // Update youth profile
-    const updatedProfile = await tx.youthProfile.update({ where: { userId: req.auth!.userId }, data: profileFields });
+    const updatedProfile = await tx.youthProfile.update({ where: { userId: req.user!.userId }, data: profileFields });
     // Optionally update phone on User
     if (phone) {
-      await tx.user.update({ where: { id: req.auth!.userId }, data: { phone } });
+      await tx.user.update({ where: { id: req.user!.userId }, data: { phone } });
     }
     return updatedProfile;
   });
@@ -86,13 +86,13 @@ const cvSchema = z.object({
   keywords: z.array(z.string()).optional(),
 });
 
-router.post('/me/cv', requireAuth, requireRole(['youth']), async (req, res) => {
-  const profile = await prisma.youthProfile.findUnique({ where: { userId: req.auth!.userId } });
+router.post('/me/cv', authenticateToken, requireYouth, async (req, res) => {
+  const profile = await prisma.youthProfile.findUnique({ where: { userId: req.user!.userId } });
   if (!profile) return res.status(404).json({ error: 'Profile not found' });
   const parse = cvSchema.safeParse(req.body);
   if (!parse.success) return res.status(400).json({ error: parse.error.flatten() });
   const doc = await CvDocument.create({
-    userId: req.auth!.userId,
+    userId: req.user!.userId,
     profileId: profile.id,
     originalFileName: parse.data.originalFileName,
     mimeType: parse.data.mimeType,
@@ -104,16 +104,16 @@ router.post('/me/cv', requireAuth, requireRole(['youth']), async (req, res) => {
 
 const upsertSkillSchema = z.object({ skillId: z.string(), level: z.enum(['beginner', 'intermediate', 'expert']), yearsExperience: z.number().int().min(0).max(60).optional() });
 
-router.get('/me/skills', requireAuth, requireRole(['youth']), async (req, res) => {
-  const profile = await prisma.youthProfile.findUnique({ where: { userId: req.auth!.userId }, include: { skills: { include: { skill: true } } } });
+router.get('/me/skills', authenticateToken, requireYouth, async (req, res) => {
+  const profile = await prisma.youthProfile.findUnique({ where: { userId: req.user!.userId }, include: { skills: { include: { skill: true } } } });
   if (!profile) return res.status(404).json({ error: 'Profile not found' });
   res.json(profile.skills);
 });
 
-router.post('/me/skills', requireAuth, requireRole(['youth']), async (req, res) => {
+router.post('/me/skills', authenticateToken, requireYouth, async (req, res) => {
   const parse = upsertSkillSchema.safeParse(req.body);
   if (!parse.success) return res.status(400).json({ error: parse.error.flatten() });
-  const profile = await prisma.youthProfile.findUnique({ where: { userId: req.auth!.userId } });
+  const profile = await prisma.youthProfile.findUnique({ where: { userId: req.user!.userId } });
   if (!profile) return res.status(404).json({ error: 'Profile not found' });
   const ps = await prisma.profileSkill.upsert({
     where: { profileId_skillId: { profileId: profile.id, skillId: parse.data.skillId } },
@@ -123,8 +123,8 @@ router.post('/me/skills', requireAuth, requireRole(['youth']), async (req, res) 
   res.status(201).json(ps);
 });
 
-router.delete('/me/skills/:skillId', requireAuth, requireRole(['youth']), async (req, res) => {
-  const profile = await prisma.youthProfile.findUnique({ where: { userId: req.auth!.userId } });
+router.delete('/me/skills/:skillId', authenticateToken, requireYouth, async (req, res) => {
+  const profile = await prisma.youthProfile.findUnique({ where: { userId: req.user!.userId } });
   if (!profile) return res.status(404).json({ error: 'Profile not found' });
   await prisma.profileSkill.delete({ where: { profileId_skillId: { profileId: profile.id, skillId: req.params.skillId } } });
   res.status(204).send();

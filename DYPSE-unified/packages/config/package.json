@@ -1,0 +1,17 @@
+{
+  "name": "@dypse/config",
+  "version": "1.0.0",
+  "description": "Shared configuration for DYPSE platform",
+  "main": "index.ts",
+  "types": "index.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  },
+  "peerDependencies": {
+    "typescript": ">=5.0.0"
+  }
+}
