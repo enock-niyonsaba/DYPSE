@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FaUser, FaEnvelope, FaPhone, FaLock, FaEye, FaEyeSlash, FaExclamationCircle, FaCheckCircle } from 'react-icons/fa';
+import { FaUser, FaEnvelope, FaPhone, FaLock, FaEye, FaEyeSlash, FaExclamationCircle, FaCheckCircle, FaCreditCard } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { GoogleSignInButton } from '@/components/auth/GoogleSignInButton';
@@ -8,7 +8,8 @@ import { NavBar } from '@/components/layout/NavBar';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardDescription, CardContent, CardFooter } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
-import { useAuth } from '@/contexts/AuthContext';
+import { authService } from '@/lib/authService';
+import { toast } from 'react-hot-toast';
 
 export function SignupPage() {
   const [formData, setFormData] = useState({
@@ -16,6 +17,7 @@ export function SignupPage() {
     lastName: '',
     email: '',
     phone: '',
+    rwandaId: '',
     role: 'youth' as const, // Default role
     password: '',
     confirmPassword: '',
@@ -27,7 +29,6 @@ export function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   
-  const { register } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -53,23 +54,59 @@ export function SignupPage() {
       return;
     }
 
+    // Add Rwanda ID validation (required field)
+    if (!formData.rwandaId || formData.rwandaId.trim().length < 16) {
+      setError('Rwanda National ID is required and must be at least 16 characters');
+      return;
+    }
+
     try {
       setLoading(true);
-      const result = await register({
-        email: formData.email,
-        password: formData.password,
-        role: formData.role,
+      
+      const registerData = {
         firstName: formData.firstName,
         lastName: formData.lastName,
+        email: formData.email,
+        password: formData.password,
+        rwandaId: formData.rwandaId,
         phone: formData.phone,
-      });
+        role: formData.role,
+      };
+
+      const response = await authService.register(registerData);
       
-      setSuccess(true);
-      // Navigate to login immediately after successful registration
-      navigate('/login', { state: { email: formData.email, justRegistered: true } });
-    } catch (err) {
+      if (response.success) {
+        setSuccess(true);
+        
+        // Show success message
+        toast.success('Account created successfully! Please log in.', { 
+          position: 'top-center', 
+          duration: 5000 
+        });
+        
+        // Navigate to login with email pre-filled
+        navigate('/login', { 
+          state: { 
+            email: formData.email, 
+            justRegistered: true,
+            message: 'Account created successfully! Please log in with your credentials.'
+          } 
+        });
+      } else {
+        setError(response.message || 'Registration failed. Please try again.');
+        toast.error(response.message || 'Registration failed. Please try again.', { 
+          position: 'top-center', 
+          duration: 4000 
+        });
+      }
+    } catch (err: any) {
       console.error('Registration error:', err);
-      setError(err instanceof Error ? err.message : 'Failed to create account. Please try again.');
+      const errorMessage = err.message || 'Failed to create account. Please try again.';
+      setError(errorMessage);
+      toast.error(errorMessage, { 
+        position: 'top-center', 
+        duration: 4000 
+      });
     } finally {
       setLoading(false);
     }
@@ -247,6 +284,31 @@ export function SignupPage() {
                             disabled={loading}
                           />
                         </div>
+                      </div>
+
+                      <div>
+                        <label htmlFor="rwandaId" className="block text-sm font-medium text-gray-700 mb-1">
+                          Rwanda National ID <span className="text-red-500">*</span>
+                        </label>
+                        <div className="relative">
+                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <FaCreditCard className="h-5 w-5 text-gray-400" />
+                          </div>
+                          <Input
+                            id="rwandaId"
+                            name="rwandaId"
+                            type="text"
+                            required
+                            value={formData.rwandaId}
+                            onChange={handleChange}
+                            className="pl-10 w-full border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rounded-md shadow-sm"
+                            placeholder="Enter your Rwanda National ID"
+                            disabled={loading}
+                            minLength={16}
+                            maxLength={16}
+                          />
+                        </div>
+                        <p className="mt-1 text-xs text-gray-500">16-digit Rwanda National ID number</p>
                       </div>
 
                       <div>

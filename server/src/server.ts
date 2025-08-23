@@ -1,14 +1,16 @@
 import express from 'express';
 import app from './app';
-import { env } from './config/env';
-import { connectMongo, prisma } from './config/db';
+import { connectMongoDB } from './config/mongodb';
 import authRouter from './routes/auth';
+import dotenv from 'dotenv';
 
 async function start() {
   try {
-    // Connect to databases
-    await prisma.$connect();
-    await connectMongo();
+    // Load environment variables
+    dotenv.config();
+    
+    // Connect to MongoDB
+    await connectMongoDB();
 
     // Health check route
     app.get('/', (req, res) => {
@@ -25,8 +27,9 @@ async function start() {
     console.log('Auth routes are mounted at /api/auth');
 
     // Start server
-    app.listen(env.port, () => {
-      console.log(`Server listening on port http://localhost:${env.port}`);
+    const port = process.env.PORT || 5000;
+    app.listen(port, () => {
+      console.log(`Server listening on port http://localhost:${port}`);
     });
   } catch (err) {
     console.error('Failed to start server:', err);

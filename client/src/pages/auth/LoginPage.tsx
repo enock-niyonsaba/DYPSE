@@ -1,14 +1,14 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash, FaSpinner } from 'react-icons/fa';
 import { Card, CardHeader, CardDescription, CardContent, CardFooter } from '@/components/ui/Card';
 import { GoogleSignInButton } from '@/components/auth/GoogleSignInButton';
 
 import { NavBar } from '../../components/layout/NavBar';
 import { Chatbot } from '@/components/chatbot/Chatbot';
-import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'react-hot-toast';
-import { loginRequest } from '@/lib/authClient';
+import { authService } from '@/lib/authService';
+import React from 'react';
 
 export function LoginPage() {
   const [email, setEmail] = useState('');
@@ -19,7 +19,21 @@ export function LoginPage() {
   const [error, setError] = useState('');
   const [networkError, setNetworkError] = useState(false);
   
-  const { login } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Handle navigation state from signup page
+  React.useEffect(() => {
+    if (location.state?.justRegistered) {
+      setEmail(location.state.email || '');
+      if (location.state.message) {
+        toast.success(location.state.message, { 
+          position: 'top-center', 
+          duration: 5000 
+        });
+      }
+    }
+  }, [location.state]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,29 +57,28 @@ export function LoginPage() {
       setIsLoading(true);
       setNetworkError(false);
       
-      // Call the new lightweight client first for deterministic error handling
-      try {
-        const { token } = await loginRequest(email, password);
-        localStorage.setItem('token', token);
-      } catch (e: any) {
-        const msg = e?.message || 'Invalid username or password. Please try again.';
-        setError(msg);
-        toast.error(msg, { position: 'top-center', duration: 4000 });
-        setIsLoading(false);
-        return;
-      }
-
-      // After obtaining a token, let the AuthContext perform user fetch and redirect
-      const result = await login(email, password);
-      if (!result.success) {
-        const msg = result.message || 'Login failed. Please try again.';
-        setError(msg);
-        toast.error(msg, { position: 'top-center', duration: 4000 });
-        setIsLoading(false);
-        return;
-      }
+      // Use the new authentication service
+      const response = await authService.login({ email, password });
       
-      // If we get here, login was successful and the AuthContext will handle the redirect
+      if (response.success && response.token) {
+        // Store the token
+        authService.setToken(response.token);
+        
+        // Show success message
+        toast.success('Login successful!', { 
+          position: 'top-center', 
+          duration: 3000 
+        });
+        
+        // Redirect to home page for now (we can refine this later based on user role)
+        navigate('/');
+      } else {
+        setError(response.message || 'Login failed. Please try again.');
+        toast.error(response.message || 'Login failed. Please try again.', { 
+          position: 'top-center', 
+          duration: 4000 
+        });
+      }
       
     } catch (err: any) {
       console.error('Login error:', err);
@@ -73,13 +86,9 @@ export function LoginPage() {
       let errorMessage = 'Invalid username or password. Please try again.';
       
       // Handle network errors specifically
-      if (err.code === 'ERR_NETWORK' || !window.navigator.onLine) {
+      if (err.message?.includes('Network error') || !window.navigator.onLine) {
         setNetworkError(true);
         errorMessage = 'Network error. Please check your internet connection and try again.';
-      } else if (err.response?.status === 401) {
-        errorMessage = 'Invalid username or password. Please check your credentials and try again.';
-      } else if (err.response?.data?.message) {
-        errorMessage = err.response.data.message;
       } else if (err.message) {
         errorMessage = err.message;
       }
